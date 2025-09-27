@@ -40,8 +40,8 @@ class VideoDownloader:
             'output_dir': './downloads',
             'output_template': '%(uploader)s - %(title)s.%(ext)s',
             
-            # Quality settings (popular defaults)
-            'format_selector': 'best[height<=1080][ext=mp4]/best[ext=mp4]/best',
+            # Quality settings (popular defaults) - More flexible format selection
+            'format_selector': 'best[ext=mp4]/best[ext=webm]/best',
             'video_quality': 'best',
             'audio_quality': 'best',
             
@@ -133,6 +133,51 @@ class VideoDownloader:
             bytes_val /= 1024.0
         return f"{bytes_val:.1f}TB"
     
+    def list_available_formats(self, url: str) -> List[Dict[str, Any]]:
+        """List all available formats for the video."""
+        self.logger.info(f"Listing available formats for: {url}")
+        
+        ydl_opts = {
+            'quiet': not self.config['verbose'],
+            'no_warnings': False,
+            'extract_flat': False,
+        }
+        
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+                formats = info.get('formats', [])
+                
+                self.logger.info(f"Total available formats: {len(formats)}")
+                print(f"\n{'='*80}")
+                print("AVAILABLE FORMATS:")
+                print(f"{'='*80}")
+                
+                for i, fmt in enumerate(formats):
+                    format_id = fmt.get('format_id', 'N/A')
+                    ext = fmt.get('ext', 'N/A')
+                    height = fmt.get('height', 'N/A')
+                    width = fmt.get('width', 'N/A')
+                    filesize = fmt.get('filesize', 'N/A')
+                    tbr = fmt.get('tbr', 'N/A')
+                    vcodec = fmt.get('vcodec', 'N/A')
+                    acodec = fmt.get('acodec', 'N/A')
+                    
+                    print(f"{i+1:2d}. Format ID: {format_id}")
+                    print(f"    Extension: {ext}")
+                    print(f"    Resolution: {width}x{height}" if width != 'N/A' and height != 'N/A' else f"    Height: {height}p" if height != 'N/A' else "    Resolution: N/A")
+                    print(f"    Bitrate: {tbr} kbps" if tbr != 'N/A' else "    Bitrate: N/A")
+                    print(f"    Video Codec: {vcodec}")
+                    print(f"    Audio Codec: {acodec}")
+                    print(f"    File Size: {self._format_bytes(filesize) if filesize != 'N/A' else 'N/A'}")
+                    print()
+                
+                return formats
+                
+        except Exception as e:
+            self.logger.error(f"Failed to list formats: {str(e)}")
+            raise
+
     def get_video_info(self, url: str) -> Dict[str, Any]:
         """Extract video information without downloading."""
         self.logger.info(f"Extracting video information for: {url}")
@@ -153,22 +198,86 @@ class VideoDownloader:
                 self.logger.info(f"Uploader: {info.get('uploader', 'N/A')}")
                 self.logger.info(f"View count: {info.get('view_count', 'N/A')}")
                 
-                # Log available formats
+                # Log available formats with better analysis
                 if 'formats' in info:
-                    self.logger.info(f"Available formats: {len(info['formats'])}")
-                    for fmt in info['formats'][:5]:  # Show first 5 formats
+                    formats = info['formats']
+                    self.logger.info(f"Available formats: {len(formats)}")
+                    
+                    # Analyze available qualities
+                    available_heights = [f.get('height') for f in formats if f.get('height')]
+                    available_exts = list(set([f.get('ext') for f in formats if f.get('ext')]))
+                    
+                    if available_heights:
+                        max_height = max(available_heights)
+                        self.logger.info(f"Maximum available resolution: {max_height}p")
+                    
+                    self.logger.info(f"Available extensions: {', '.join(available_exts)}")
+                    
+                    # Show sample formats
+                    for i, fmt in enumerate(formats[:5]):  # Show first 5 formats
                         quality_info = f"{fmt.get('format_id', 'N/A')} - {fmt.get('ext', 'N/A')}"
                         if fmt.get('height'):
                             quality_info += f" - {fmt['height']}p"
                         if fmt.get('filesize'):
                             quality_info += f" - {self._format_bytes(fmt['filesize'])}"
-                        self.logger.info(f"  Format: {quality_info}")
+                        self.logger.info(f"  Format {i+1}: {quality_info}")
                 
                 return info
                 
         except Exception as e:
             self.logger.error(f"Failed to extract video info: {str(e)}")
             raise
+    
+    def get_optimal_format_selector(self, url: str, preferred_quality: str = "best") -> str:
+        """Determine optimal format selector based on available formats."""
+        try:
+            info = self.get_video_info(url)
+            formats = info.get('formats', [])
+            
+            if not formats:
+                return 'best'
+            
+            # Analyze available formats
+            available_heights = [f.get('height') for f in formats if f.get('height')]
+            available_exts = [f.get('ext') for f in formats if f.get('ext')]
+            
+            # Determine best available extension
+            ext_priority = ['mp4', 'webm', 'mkv', 'flv']
+            best_ext = None
+            for ext in ext_priority:
+                if ext in available_exts:
+                    best_ext = ext
+                    break
+            
+            # Determine quality constraint
+            if available_heights:
+                max_height = max(available_heights)
+                self.logger.info(f"Adjusting format selector for max available resolution: {max_height}p")
+                
+                if preferred_quality == "best":
+                    if best_ext:
+                        return f'best[ext={best_ext}]/best'
+                    else:
+                        return 'best'
+                else:
+                    # Parse preferred quality (e.g., "1080p" -> 1080)
+                    try:
+                        preferred_height = int(preferred_quality.replace('p', ''))
+                        target_height = min(preferred_height, max_height)
+                        
+                        if best_ext:
+                            return f'best[height<={target_height}][ext={best_ext}]/best[ext={best_ext}]/best'
+                        else:
+                            return f'best[height<={target_height}]/best'
+                    except ValueError:
+                        return f'best[ext={best_ext}]/best' if best_ext else 'best'
+            else:
+                # No height info available, just use extension preference
+                return f'best[ext={best_ext}]/best' if best_ext else 'best'
+                
+        except Exception as e:
+            self.logger.warning(f"Could not determine optimal format, using fallback: {str(e)}")
+            return 'best'
     
     def download_video(self, url: str) -> bool:
         """Download video with configured parameters."""
@@ -178,13 +287,21 @@ class VideoDownloader:
         output_dir = Path(self.config['output_dir'])
         output_dir.mkdir(parents=True, exist_ok=True)
         
+        # Determine optimal format selector
+        try:
+            optimal_format = self.get_optimal_format_selector(url, self.config['video_quality'])
+            self.logger.info(f"Using format selector: {optimal_format}")
+        except Exception as e:
+            self.logger.warning(f"Could not determine optimal format, using configured default: {str(e)}")
+            optimal_format = self.config['format_selector']
+        
         # Configure yt-dlp options
         ydl_opts = {
             # Output settings
             'outtmpl': str(output_dir / self.config['output_template']),
             
-            # Quality settings
-            'format': self.config['format_selector'],
+            # Quality settings - use optimal format
+            'format': optimal_format,
             
             # Download settings
             'retries': self.config['retries'],
@@ -210,6 +327,9 @@ class VideoDownloader:
             # Logging
             'quiet': not self.config['verbose'],
             'no_warnings': False,
+            
+            # Error handling
+            'ignoreerrors': False,
         }
         
         # Add post-processors if needed
@@ -228,8 +348,24 @@ class VideoDownloader:
             self.logger.info("Download completed successfully!")
             return True
             
-        except Exception as e:
+        except yt_dlp.DownloadError as e:
             self.logger.error(f"Download failed: {str(e)}")
+            
+            # Try with fallback format selector
+            self.logger.info("Attempting download with fallback format selector...")
+            ydl_opts['format'] = 'best'
+            
+            try:
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([url])
+                self.logger.info("Download completed with fallback format!")
+                return True
+            except Exception as fallback_error:
+                self.logger.error(f"Fallback download also failed: {str(fallback_error)}")
+                return False
+            
+        except Exception as e:
+            self.logger.error(f"Unexpected download error: {str(e)}")
             return False
     
     def save_progress_report(self):
@@ -255,7 +391,7 @@ def main():
                        help='Video URL to download')
     parser.add_argument('--output-dir', '-o', default='./downloads',
                        help='Output directory for downloads')
-    parser.add_argument('--quality', '-q', default='1080p',
+    parser.add_argument('--quality', '-q', default='best',
                        choices=['480p', '720p', '1080p', 'best'],
                        help='Video quality preference')
     parser.add_argument('--format', '-f', default='mp4',
@@ -263,6 +399,8 @@ def main():
                        help='Output format preference')
     parser.add_argument('--info-only', action='store_true',
                        help='Only extract video information, do not download')
+    parser.add_argument('--list-formats', action='store_true',
+                       help='List all available formats for the video')
     parser.add_argument('--verbose', '-v', action='store_true',
                        help='Enable verbose logging')
     
@@ -272,7 +410,7 @@ def main():
     config = {
         'output_dir': args.output_dir,
         'output_template': '%(uploader)s - %(title)s.%(ext)s',
-        'format_selector': f'best[height<={args.quality[:-1]}][ext={args.format}]/best[ext={args.format}]/best' if args.quality != 'best' else f'best[ext={args.format}]/best',
+        'format_selector': f'best[ext={args.format}]/best',  # Simplified default
         'video_quality': args.quality,
         'audio_quality': 'best',
         'prefer_free_formats': True,
@@ -302,6 +440,11 @@ def main():
         print(f"Format: {args.format}")
         print(f"{'='*60}")
         
+        # List formats if requested
+        if args.list_formats:
+            downloader.list_available_formats(args.url)
+            return
+        
         # Extract video information
         video_info = downloader.get_video_info(args.url)
         
@@ -326,6 +469,7 @@ def main():
             print(f"{'='*60}")
         else:
             print("Download failed. Check logs for details.")
+            print("Try using --list-formats to see available options.")
             sys.exit(1)
             
     except KeyboardInterrupt:
@@ -333,6 +477,7 @@ def main():
         sys.exit(1)
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
+        print("Try using --list-formats to debug format issues.")
         sys.exit(1)
 
 
