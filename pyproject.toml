@@ -1,0 +1,14 @@
+[project]
+name = "utility-yt-dlt-2025"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "colorama>=0.4.6",
+    "ffmpeg-python>=0.2.0",
+    "pathlib>=1.0.1",
+    "requests>=2.31.0",
+    "tqdm>=4.66.0",
+    "yt-dlp>=2023.10.13",
+]

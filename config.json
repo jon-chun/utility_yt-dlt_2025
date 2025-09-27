@@ -1,0 +1,32 @@
+{
+  "output_dir": "./downloads",
+  "output_template": "%(uploader)s - %(title)s.%(ext)s",
+  
+  "format_selector": "best[height<=1080][ext=mp4]/best[ext=mp4]/best",
+  "video_quality": "best",
+  "audio_quality": "best",
+  
+  "prefer_free_formats": true,
+  "extract_subtitles": true,
+  "auto_subtitles": true,
+  "embed_subtitles": false,
+  "download_thumbnail": true,
+  "embed_thumbnail": false,
+  
+  "retries": 3,
+  "fragment_retries": 5,
+  "concurrent_fragments": 4,
+  
+  "merge_output_format": "mp4",
+  "keep_video": true,
+  
+  "verbose": true,
+  "log_level": "INFO",
+  
+  "custom_format_selectors": {
+    "high_quality": "best[height<=1080][ext=mp4]/best[ext=mp4]",
+    "medium_quality": "best[height<=720][ext=mp4]/best[ext=mp4]",
+    "low_quality": "best[height<=480][ext=mp4]/best[ext=mp4]",
+    "audio_only": "bestaudio[ext=m4a]/bestaudio"
+  }
+}

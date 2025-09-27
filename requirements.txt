@@ -1,0 +1,11 @@
+# IBM Video Downloader Requirements
+# Install with: pip install -r requirements.txt
+
+yt-dlp>=2023.10.13
+requests>=2.31.0
+pathlib>=1.0.1
+
+# Optional dependencies for enhanced functionality
+ffmpeg-python>=0.2.0  # For video post-processing
+colorama>=0.4.6       # For colored terminal output (if you want to add that feature)
+tqdm>=4.66.0          # Alternative progress bar (if preferred)
