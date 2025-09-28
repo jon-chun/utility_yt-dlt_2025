@@ -35,6 +35,7 @@ class VideoDownloader:
         self.setup_logging()
         self.progress_data = {}
         self.diagnostic_data = {}
+        self.force_audio_combination = False
         
     def get_default_config(self) -> Dict[str, Any]:
         """Get default configuration with popular settings."""
@@ -178,6 +179,9 @@ class VideoDownloader:
                 format_details = []
                 hls_formats = []
                 regular_formats = []
+                video_only_formats = []
+                audio_only_formats = []
+                combined_formats = []
                 
                 for fmt in formats:
                     format_id = fmt.get('format_id', 'unknown')
@@ -201,20 +205,49 @@ class VideoDownloader:
                     if format_id.startswith('hls-'):
                         hls_formats.append(format_info)
                         diagnostics['hls_detected'] = True
+                        
+                        # Categorize HLS streams
+                        if height and vcodec != 'none' and acodec == 'none':
+                            video_only_formats.append(format_info)
+                        elif vcodec == 'none' and acodec != 'none':
+                            audio_only_formats.append(format_info)
+                        elif height and vcodec != 'none' and acodec != 'none':
+                            combined_formats.append(format_info)
                     else:
                         regular_formats.append(format_info)
                 
                 diagnostics['available_formats'] = format_details
+                diagnostics['video_only_count'] = len(video_only_formats)
+                diagnostics['audio_only_count'] = len(audio_only_formats)
+                diagnostics['combined_count'] = len(combined_formats)
                 
                 if diagnostics['hls_detected']:
                     self.debug_print(f"🎯 HLS detected: {len(hls_formats)} HLS formats found", 'info')
+                    self.debug_print(f"   - Video-only streams: {len(video_only_formats)}", 'info')
+                    self.debug_print(f"   - Audio-only streams: {len(audio_only_formats)}", 'info')
+                    self.debug_print(f"   - Combined streams: {len(combined_formats)}", 'info')
                     
-                    # Find best HLS format
-                    video_hls = [f for f in hls_formats if f['height'] and f['vcodec'] != 'none']
-                    if video_hls:
-                        best_hls = max(video_hls, key=lambda x: x['height'] or 0)
-                        diagnostics['recommended_format'] = best_hls['id']
-                        self.debug_print(f"🎯 Recommended HLS format: {best_hls['id']} ({best_hls['height']}p)", 'info')
+                    # Determine recommended format based on stream separation
+                    if combined_formats:
+                        # Use best combined format if available
+                        best_combined = max(combined_formats, key=lambda x: x['height'] or 0)
+                        diagnostics['recommended_format'] = best_combined['id']
+                        self.debug_print(f"🎯 Recommended combined format: {best_combined['id']} ({best_combined['height']}p)", 'info')
+                    elif video_only_formats and audio_only_formats:
+                        # Recommend video+audio combination
+                        best_video = max(video_only_formats, key=lambda x: x['height'] or 0)
+                        best_audio = audio_only_formats[0]  # Usually equivalent
+                        combined_recommendation = f"{best_video['id']}+{best_audio['id']}"
+                        diagnostics['recommended_format'] = combined_recommendation
+                        self.debug_print(f"🎯 Recommended video+audio combination: {combined_recommendation}", 'info')
+                        self.debug_print(f"   - Video: {best_video['id']} ({best_video['height']}p)", 'info')
+                        self.debug_print(f"   - Audio: {best_audio['id']}", 'info')
+                    elif video_only_formats:
+                        # Only video available (no audio warning)
+                        best_video = max(video_only_formats, key=lambda x: x['height'] or 0)
+                        diagnostics['recommended_format'] = best_video['id']
+                        diagnostics['issues_found'].append("No audio streams detected - video only")
+                        self.debug_print(f"⚠️  Video-only format: {best_video['id']} (NO AUDIO)", 'warning')
                 
                 # Debug format details
                 if self.debug_level == 'max':
@@ -408,21 +441,60 @@ class VideoDownloader:
             
             # Handle HLS formats specially
             if diagnostics['hls_detected']:
-                self.debug_print("HLS stream detected, using HLS-specific format selection", 'info')
+                self.debug_print("HLS stream detected, analyzing video/audio separation", 'info')
                 
-                if diagnostics['recommended_format']:
-                    recommended = diagnostics['recommended_format']
-                    self.debug_print(f"Using recommended HLS format: {recommended}", 'info')
-                    return recommended
+                formats = diagnostics.get('available_formats', [])
+                
+                # Separate video and audio streams
+                video_streams = [f for f in formats if f.get('height') and f.get('vcodec') != 'none']
+                audio_streams = [f for f in formats if f.get('vcodec') == 'none' and f.get('acodec') != 'none']
+                combined_streams = [f for f in formats if f.get('height') and f.get('acodec') != 'none']
+                
+                self.debug_print(f"Video-only streams: {len(video_streams)}", 'debug')
+                self.debug_print(f"Audio-only streams: {len(audio_streams)}", 'debug')
+                self.debug_print(f"Combined streams: {len(combined_streams)}", 'debug')
+                
+                # Case 1: Video and audio are combined in single streams
+                if combined_streams:
+                    best_combined = max(combined_streams, key=lambda x: x.get('height', 0))
+                    self.debug_print(f"Using combined video+audio stream: {best_combined['id']}", 'info')
+                    return best_combined['id']
+                
+                # Case 2: Video and audio are separated (IBM Video case)
+                elif video_streams and audio_streams:
+                    # Select best video stream
+                    best_video = max(video_streams, key=lambda x: x.get('height', 0))
+                    
+                    # Select first available audio stream (they're usually equivalent)
+                    best_audio = audio_streams[0]
+                    
+                    # Create combined format selector
+                    combined_format = f"{best_video['id']}+{best_audio['id']}"
+                    self.debug_print(f"Combining video+audio streams: {combined_format}", 'info')
+                    self.debug_print(f"Video: {best_video['id']} ({best_video.get('height')}p)", 'info')
+                    self.debug_print(f"Audio: {best_audio['id']}", 'info')
+                    
+                    return combined_format
+                
+                # Case 3: Only video streams available
+                elif video_streams:
+                    if self.force_audio_combination:
+                        self.debug_print("Force audio combination enabled but no audio streams found!", 'error')
+                        # Try generic format selector that might find audio
+                        return 'best+bestaudio/best'
+                    else:
+                        best_video = max(video_streams, key=lambda x: x.get('height', 0))
+                        self.debug_print(f"Only video streams available, using: {best_video['id']}", 'warning')
+                        self.debug_print("Warning: This video may not have audio!", 'warning')
+                        return best_video['id']
+                
+                # Case 4: Fallback to any available HLS format
                 else:
-                    # Fallback to best HLS format
-                    hls_formats = [f for f in diagnostics['available_formats'] if f['is_hls'] and f['height']]
-                    if hls_formats:
-                        best_hls = max(hls_formats, key=lambda x: x['height'] or 0)
-                        self.debug_print(f"Using best available HLS format: {best_hls['id']}", 'info')
-                        return best_hls['id']
+                    if diagnostics['recommended_format']:
+                        self.debug_print(f"Using fallback recommended format: {diagnostics['recommended_format']}", 'warning')
+                        return diagnostics['recommended_format']
             
-            # Regular format handling
+            # Regular format handling (non-HLS)
             info = self.get_video_info(url)
             formats = info.get('formats', [])
             
@@ -448,9 +520,9 @@ class VideoDownloader:
                 
                 if preferred_quality == "best":
                     if best_ext:
-                        return f'best[ext={best_ext}]/best'
+                        return f'best[ext={best_ext}]+bestaudio/best'
                     else:
-                        return 'best'
+                        return 'best+bestaudio/best'
                 else:
                     # Parse preferred quality (e.g., "1080p" -> 1080)
                     try:
@@ -458,18 +530,18 @@ class VideoDownloader:
                         target_height = min(preferred_height, max_height)
                         
                         if best_ext:
-                            return f'best[height<={target_height}][ext={best_ext}]/best[ext={best_ext}]/best'
+                            return f'best[height<={target_height}][ext={best_ext}]+bestaudio/best[ext={best_ext}]+bestaudio/best'
                         else:
-                            return f'best[height<={target_height}]/best'
+                            return f'best[height<={target_height}]+bestaudio/best'
                     except ValueError:
-                        return f'best[ext={best_ext}]/best' if best_ext else 'best'
+                        return f'best[ext={best_ext}]+bestaudio/best' if best_ext else 'best+bestaudio/best'
             else:
-                # No height info available, just use extension preference
-                return f'best[ext={best_ext}]/best' if best_ext else 'best'
+                # No height info available, just use extension preference with audio
+                return f'best[ext={best_ext}]+bestaudio/best' if best_ext else 'best+bestaudio/best'
                 
         except Exception as e:
             self.debug_print(f"Could not determine optimal format, using fallback: {str(e)}", 'warning')
-            return 'best'
+            return 'best+bestaudio/best'
     
     def download_video(self, url: str) -> bool:
         """Download video with configured parameters and enhanced diagnostics."""
@@ -506,29 +578,49 @@ class VideoDownloader:
         format_options = []
         
         if diagnostics.get('hls_detected'):
-            # For HLS, try specific format IDs first
-            hls_video_formats = [
+            # For HLS, prioritize proper video+audio combinations
+            video_only_formats = [
                 f for f in diagnostics.get('available_formats', []) 
-                if f.get('is_hls') and f.get('height') and f.get('vcodec') != 'none'
+                if f.get('is_hls') and f.get('height') and f.get('vcodec') != 'none' and f.get('acodec') == 'none'
             ]
-            if hls_video_formats:
-                # Sort by quality (height) descending
-                hls_video_formats.sort(key=lambda x: x.get('height', 0), reverse=True)
-                format_options.extend([f['id'] for f in hls_video_formats[:3]])  # Top 3 qualities
+            audio_only_formats = [
+                f for f in diagnostics.get('available_formats', []) 
+                if f.get('is_hls') and f.get('vcodec') == 'none' and f.get('acodec') != 'none'
+            ]
+            combined_formats = [
+                f for f in diagnostics.get('available_formats', []) 
+                if f.get('is_hls') and f.get('height') and f.get('acodec') != 'none'
+            ]
+            
+            # Add combined formats first (if available)
+            if combined_formats:
+                combined_formats.sort(key=lambda x: x.get('height', 0), reverse=True)
+                format_options.extend([f['id'] for f in combined_formats[:3]])
+            
+            # Add video+audio combinations
+            if video_only_formats and audio_only_formats:
+                video_only_formats.sort(key=lambda x: x.get('height', 0), reverse=True)
+                for video in video_only_formats[:3]:  # Top 3 video qualities
+                    for audio in audio_only_formats[:2]:  # Top 2 audio options
+                        format_options.append(f"{video['id']}+{audio['id']}")
+            
+            # Add fallback individual video streams (will have no audio)
+            if video_only_formats:
+                format_options.extend([f['id'] for f in video_only_formats[:2]])
         
         # Add generic fallbacks
         format_options.extend([
             optimal_format,
+            'best+bestaudio/best',
+            'best[ext=mp4]+bestaudio[ext=mp4]/best',
             'best',
-            'worst',
-            'best[ext=mp4]',
-            'best[ext=webm]'
+            'worst'
         ])
         
         # Remove duplicates while preserving order
         format_options = list(dict.fromkeys(format_options))
         
-        self.debug_print(f"Format options to try: {format_options}", 'debug')
+        self.debug_print(f"Format options to try: {format_options[:5]}{'...' if len(format_options) > 5 else ''}", 'debug')
         
         # Configure yt-dlp options
         base_ydl_opts = {
@@ -732,6 +824,8 @@ def main():
                        help='List all available formats for the video')
     parser.add_argument('--diagnostics', action='store_true',
                        help='Run comprehensive diagnostic tests')
+    parser.add_argument('--fix-audio', action='store_true',
+                       help='Ensure video+audio combination for HLS streams (fixes silent videos)')
     parser.add_argument('--debug-level', choices=['none', 'min', 'max'], default='max',
                        help='Debug output level (default: max)')
     parser.add_argument('--verbose', '-v', action='store_true',
@@ -742,6 +836,9 @@ def main():
     # Handle verbose flag
     if args.verbose:
         args.debug_level = 'max'
+    
+    # Handle fix-audio flag
+    force_audio_combination = args.fix_audio
     
     # Create custom configuration based on arguments
     config = {
@@ -768,6 +865,10 @@ def main():
     # Initialize downloader with debug level
     downloader = VideoDownloader(config, debug_level=args.debug_level)
     
+    # Set force audio combination if requested
+    if force_audio_combination:
+        downloader.force_audio_combination = True
+    
     try:
         if args.debug_level != 'none':
             print(f"{'='*70}")
@@ -778,6 +879,8 @@ def main():
             print(f"🎯 Quality: {args.quality}")
             print(f"📄 Format: {args.format}")
             print(f"🔍 Debug Level: {args.debug_level}")
+            if force_audio_combination:
+                print(f"🔊 Audio Fix: Enabled (forces video+audio combination)")
             print(f"{'='*70}")
         
         # Run diagnostics if requested
@@ -866,6 +969,17 @@ def main():
                 video_file = video_files[0]
                 file_size = video_file.stat().st_size / (1024**3)  # GB
                 print(f"🎥 Video: {video_file.name} ({file_size:.2f} GB)")
+                
+                # Check for audio issues based on diagnostics
+                if hasattr(downloader, 'diagnostic_data'):
+                    diagnostics = downloader.diagnostic_data
+                    if (diagnostics.get('hls_detected') and 
+                        diagnostics.get('video_only_count', 0) > 0 and 
+                        diagnostics.get('audio_only_count', 0) > 0):
+                        print(f"🔊 Audio Status: Video+Audio combined automatically")
+                    elif diagnostics.get('video_only_count', 0) > 0 and diagnostics.get('audio_only_count', 0) == 0:
+                        print(f"⚠️  Audio Status: No audio detected (video-only stream)")
+                        print(f"💡 Suggestion: This appears to be a video-only stream")
                 
                 # Provide playback suggestions
                 print(f"🎬 To play the video:")
