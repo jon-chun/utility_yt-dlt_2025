@@ -565,11 +565,24 @@ class VideoDownloader:
         }
         
         # Add post-processors if needed
+        postprocessors = []
+        
         if self.config['merge_output_format']:
-            base_ydl_opts['postprocessors'] = [{
+            postprocessors.append({
                 'key': 'FFmpegVideoConvertor',
                 'preferedformat': self.config['merge_output_format'],
-            }]
+            })
+        
+        # Add ffmpeg post-processor to fix HLS timestamp issues (QuickTime compatibility)
+        if diagnostics.get('hls_detected'):
+            self.debug_print("Adding FFmpeg post-processor for HLS compatibility", 'info')
+            postprocessors.append({
+                'key': 'FFmpegVideoRemux',
+                'preferedformat': self.config['merge_output_format'] or 'mp4',
+            })
+        
+        if postprocessors:
+            base_ydl_opts['postprocessors'] = postprocessors
         
         # Try each format option
         for i, format_selector in enumerate(format_options):
@@ -633,19 +646,70 @@ class VideoDownloader:
             
             return False
     
+    def verify_video_file(self, file_path: Path) -> Dict[str, Any]:
+        """Verify video file integrity and get basic information."""
+        verification = {
+            'exists': False,
+            'playable': False,
+            'duration': None,
+            'size_mb': 0,
+            'issues': []
+        }
+        
+        try:
+            if file_path.exists():
+                verification['exists'] = True
+                verification['size_mb'] = file_path.stat().st_size / (1024**2)
+                
+                # Try to get video info using ffprobe if available
+                try:
+                    import subprocess
+                    result = subprocess.run([
+                        'ffprobe', '-v', 'quiet', '-print_format', 'json', 
+                        '-show_format', str(file_path)
+                    ], capture_output=True, text=True, timeout=30)
+                    
+                    if result.returncode == 0:
+                        import json
+                        probe_data = json.loads(result.stdout)
+                        if 'format' in probe_data:
+                            verification['playable'] = True
+                            verification['duration'] = float(probe_data['format'].get('duration', 0))
+                    else:
+                        verification['issues'].append("ffprobe failed - video may have issues")
+                        
+                except (subprocess.TimeoutExpired, FileNotFoundError, json.JSONDecodeError):
+                    verification['issues'].append("ffprobe not available - cannot verify video integrity")
+                except Exception as e:
+                    verification['issues'].append(f"Video verification error: {str(e)}")
+                    
+            else:
+                verification['issues'].append("Video file not found")
+                
+        except Exception as e:
+            verification['issues'].append(f"File access error: {str(e)}")
+            
+        return verification
+
     def save_progress_report(self):
         """Save progress report to file."""
-        if not self.progress_data:
+        if not self.progress_data and not self.diagnostic_data:
             return
             
-        report_file = Path(self.config['output_dir']) / 'logs' / 'progress_report.json'
+        report_file = Path(self.config['output_dir']) / 'logs' / 'session_report.json'
+        report_data = {
+            'timestamp': datetime.now().isoformat(),
+            'config': self.config,
+            'progress_data': self.progress_data,
+            'diagnostic_data': self.diagnostic_data
+        }
         
         try:
             with open(report_file, 'w') as f:
-                json.dump(self.progress_data, f, indent=2)
-            self.logger.info(f"Progress report saved: {report_file}")
+                json.dump(report_data, f, indent=2, default=str)
+            self.debug_print(f"Session report saved: {report_file}", 'info')
         except Exception as e:
-            self.logger.error(f"Failed to save progress report: {str(e)}")
+            self.debug_print(f"Failed to save session report: {str(e)}", 'error')
 
 
 def main():
@@ -795,6 +859,24 @@ def main():
             print(f"\n{'='*70}")
             print("✅ DOWNLOAD COMPLETED SUCCESSFULLY!")
             print(f"📁 Files saved to: {args.output_dir}")
+            
+            # Check if video file exists and provide playback suggestions
+            video_files = list(Path(args.output_dir).glob("*.mp4"))
+            if video_files:
+                video_file = video_files[0]
+                file_size = video_file.stat().st_size / (1024**3)  # GB
+                print(f"🎥 Video: {video_file.name} ({file_size:.2f} GB)")
+                
+                # Provide playback suggestions
+                print(f"🎬 To play the video:")
+                print(f"   macOS: open '{video_file}'")
+                print(f"   Linux: vlc '{video_file}' or mpv '{video_file}'")
+                print(f"   Windows: start '{video_file}'")
+                print(f"   Universal: Use VLC Media Player for best compatibility")
+                
+                if diagnostics and diagnostics.get('hls_detected'):
+                    print(f"ℹ️  Note: HLS videos may need VLC or mpv for optimal playback")
+            
             print(f"{'='*70}")
         else:
             print(f"\n{'='*70}")

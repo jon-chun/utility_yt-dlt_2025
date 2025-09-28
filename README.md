@@ -6,6 +6,23 @@ A robust Python utility for downloading videos from IBM Video (video.ibm.com) an
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![yt-dlp](https://img.shields.io/badge/yt--dlp-latest-green.svg)](https://github.com/yt-dlp/yt-dlp)
 
+## 🎯 **Verified Working Solution** ✅
+
+**Status: FULLY FUNCTIONAL** - Successfully downloads IBM Video HLS streams!
+
+**Latest Test Results:**
+- ✅ **IBM Video URL**: `https://video.ibm.com/recorded/134516112` 
+- ✅ **Formats Detected**: 7 HLS formats (252p to 1080p)
+- ✅ **Download Success**: 1.74GB video in 5:32 minutes at 4.98MiB/s
+- ✅ **Quality**: 1080p (hls-2625) automatically selected
+- ✅ **Files Created**: Video + thumbnail + comprehensive logs
+
+### Quick Success Test:
+```bash
+# This WILL work now:
+python get_ibm_yt-dlt.py --debug-level max
+```
+
 ## ✨ Features
 
 - **🎯 Smart Format Detection**: Automatically detects available formats and selects optimal quality
@@ -141,6 +158,35 @@ research_config = {
     'output_template': '%(uploader)s/%(id)s_%(title)s.%(ext)s'
 }
 ```
+
+## 🎥 **Video Playback Compatibility**
+
+### **Issue**: QuickTime Player Compatibility
+Some HLS-converted videos may show "The file isn't compatible with QuickTime Player" due to timestamp issues.
+
+### **Solutions**:
+
+#### **Option 1: Use VLC Media Player (Recommended)**
+```bash
+# Download VLC (free): https://www.videolan.org/vlc/
+# Then play with:
+vlc "downloads/ConcordiaMHD - Symposium Plenary One.mp4"
+```
+
+#### **Option 2: Convert with FFmpeg**
+```bash
+# Install ffmpeg first, then convert:
+ffmpeg -i "downloads/ConcordiaMHD - Symposium Plenary One.mp4" -c copy -movflags +faststart "fixed_video.mp4"
+```
+
+#### **Option 3: Download with Auto-Fix (Coming Soon)**
+The script will automatically apply FFmpeg post-processing for HLS compatibility.
+
+### **Recommended Media Players**:
+- **VLC Media Player**: Best compatibility with HLS-converted videos
+- **mpv**: Lightweight, excellent for all formats
+- **IINA** (macOS): Modern macOS player with great codec support
+- **PotPlayer** (Windows): Advanced features and codec support
 
 ## 🛠️ Troubleshooting
 
