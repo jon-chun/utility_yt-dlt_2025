@@ -1,0 +1,91 @@
+2025-10-06 17:30:23,234 - INFO - 🔧 Debug level: max
+2025-10-06 17:30:23,234 - INFO - 📝 Log file: downloads/logs/download_20251006_173023.log
+2025-10-06 17:30:23,234 - DEBUG - 🧩 Effective Configuration:
+{
+  "output_dir": "./downloads",
+  "output_template": "%(uploader)s - %(title)s.%(ext)s",
+  "format_selector": "best[ext=mp4]/best",
+  "video_quality": "best",
+  "audio_quality": "best",
+  "prefer_free_formats": true,
+  "extract_subtitles": true,
+  "auto_subtitles": true,
+  "embed_subtitles": false,
+  "download_thumbnail": true,
+  "embed_thumbnail": false,
+  "retries": 3,
+  "fragment_retries": 5,
+  "concurrent_fragments": 4,
+  "merge_output_format": "mp4",
+  "keep_video": true,
+  "verbose": true,
+  "log_level": "DEBUG",
+  "extractor_retries": 5,
+  "socket_timeout": 30,
+  "geo_bypass_country": "US",
+  "hls_prefer_native": true,
+  "hls_use_mpegts": true,
+  "cookies": null,
+  "cookies_from_browser": null,
+  "http_headers": {
+    "Referer": "https://video.ibm.com/",
+    "Origin": "https://video.ibm.com",
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  },
+  "debug_level": "max"
+}
+2025-10-06 17:30:23,234 - INFO - 🔎 Extracting video information for: https://video.ibm.com/recorded/134516112
+2025-10-06 17:30:43,443 - INFO - 🎞️  Title: Symposium Plenary One
+2025-10-06 17:30:43,443 - INFO - ⏱️  Duration: 5131.36 s
+2025-10-06 17:30:43,443 - INFO - 👤 Uploader: ConcordiaMHD
+2025-10-06 17:30:43,443 - INFO - 🧮 Formats: 7
+2025-10-06 17:30:43,443 - INFO - ℹ️  INFO: Starting download for: https://video.ibm.com/recorded/134516112
+2025-10-06 17:30:43,443 - INFO - ℹ️  INFO: Pre-download diagnostics
+2025-10-06 17:30:43,443 - INFO - ℹ️  INFO: Starting comprehensive diagnostic tests
+2025-10-06 17:30:43,443 - INFO - ℹ️  INFO: Test 1: Checking URL accessibility & metadata
+2025-10-06 17:31:01,554 - INFO - ℹ️  INFO: ✅ URL is accessible
+2025-10-06 17:31:01,557 - INFO - ℹ️  INFO: Test 2: Testing metadata extraction
+2025-10-06 17:31:01,558 - INFO - ℹ️  INFO: ✅ Metadata extracted: Symposium Plenary One
+2025-10-06 17:31:01,558 - INFO - ℹ️  INFO: Test 3: Analyzing available formats
+2025-10-06 17:31:01,558 - INFO - ℹ️  INFO: ✅ Found 7 formats
+2025-10-06 17:31:01,558 - INFO - ℹ️  INFO: 🎯 HLS detected: 7 HLS formats found
+2025-10-06 17:31:01,558 - INFO - ℹ️  INFO:    - Video-only streams: 5
+2025-10-06 17:31:01,558 - INFO - ℹ️  INFO:    - Audio-only streams: 2
+2025-10-06 17:31:01,558 - INFO - ℹ️  INFO:    - Combined streams: 0
+2025-10-06 17:31:01,558 - INFO - ℹ️  INFO: 🎯 Recommended video+audio combination: hls-2625+hls-audiogroup-English__US_-0
+2025-10-06 17:31:01,558 - INFO - ℹ️  INFO: Test 4: Testing format selectors (simulate)
+2025-10-06 17:31:11,277 - INFO - ℹ️  INFO: ✅ Selector works: hls-2625+hls-audiogroup-English__US_-0
+2025-10-06 17:31:36,917 - WARNING - ⚠️  WARNING: Selector FAILED: bestvideo+bestaudio/best -> [0;31mERROR:[0m [ustream] 134516112: No video formats found!; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+2025-10-06 17:31:44,289 - WARNING - ⚠️  WARNING: Selector FAILED: best -> [0;31mERROR:[0m [ustream] 134516112: Requested format is not available. Use --list-formats for a list of available formats
+2025-10-06 17:32:01,127 - WARNING - ⚠️  WARNING: Selector FAILED: worst -> [0;31mERROR:[0m [ustream] 134516112: Requested format is not available. Use --list-formats for a list of available formats
+2025-10-06 17:32:01,129 - DEBUG - 🔍 DEBUG: Format options to try (first 6): ['hls-2625+hls-audiogroup-English__US_-0', 'hls-2625+hls-audiogroup-English__US_-1', 'hls-406+hls-audiogroup-English__US_-0', 'hls-406+hls-audiogroup-English__US_-1', 'hls-271+hls-audiogroup-English__US_-0', 'hls-271+hls-audiogroup-English__US_-1'] ...
+2025-10-06 17:32:01,129 - INFO - ℹ️  INFO: Adding FFmpeg remux for HLS compatibility
+2025-10-06 17:32:01,129 - INFO - ℹ️  INFO: [1/13] Try selector: hls-2625+hls-audiogroup-English__US_-0
+2025-10-06 17:32:01,163 - ERROR - ❌ ERROR: Unexpected error (hls-2625+hls-audiogroup-English__US_-0): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,163 - INFO - ℹ️  INFO: [2/13] Try selector: hls-2625+hls-audiogroup-English__US_-1
+2025-10-06 17:32:01,185 - ERROR - ❌ ERROR: Unexpected error (hls-2625+hls-audiogroup-English__US_-1): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,185 - INFO - ℹ️  INFO: [3/13] Try selector: hls-406+hls-audiogroup-English__US_-0
+2025-10-06 17:32:01,203 - ERROR - ❌ ERROR: Unexpected error (hls-406+hls-audiogroup-English__US_-0): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,203 - INFO - ℹ️  INFO: [4/13] Try selector: hls-406+hls-audiogroup-English__US_-1
+2025-10-06 17:32:01,220 - ERROR - ❌ ERROR: Unexpected error (hls-406+hls-audiogroup-English__US_-1): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,220 - INFO - ℹ️  INFO: [5/13] Try selector: hls-271+hls-audiogroup-English__US_-0
+2025-10-06 17:32:01,237 - ERROR - ❌ ERROR: Unexpected error (hls-271+hls-audiogroup-English__US_-0): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,237 - INFO - ℹ️  INFO: [6/13] Try selector: hls-271+hls-audiogroup-English__US_-1
+2025-10-06 17:32:01,254 - ERROR - ❌ ERROR: Unexpected error (hls-271+hls-audiogroup-English__US_-1): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,254 - INFO - ℹ️  INFO: [7/13] Try selector: hls-2625
+2025-10-06 17:32:01,270 - ERROR - ❌ ERROR: Unexpected error (hls-2625): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,270 - INFO - ℹ️  INFO: [8/13] Try selector: hls-406
+2025-10-06 17:32:01,287 - ERROR - ❌ ERROR: Unexpected error (hls-406): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,287 - INFO - ℹ️  INFO: [9/13] Try selector: bestvideo+bestaudio/best
+2025-10-06 17:32:01,304 - ERROR - ❌ ERROR: Unexpected error (bestvideo+bestaudio/best): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,304 - INFO - ℹ️  INFO: [10/13] Try selector: best[ext=mp4]+bestaudio[ext=mp4]/best
+2025-10-06 17:32:01,322 - ERROR - ❌ ERROR: Unexpected error (best[ext=mp4]+bestaudio[ext=mp4]/best): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,322 - INFO - ℹ️  INFO: [11/13] Try selector: bestvideo/best
+2025-10-06 17:32:01,338 - ERROR - ❌ ERROR: Unexpected error (bestvideo/best): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,338 - INFO - ℹ️  INFO: [12/13] Try selector: best
+2025-10-06 17:32:01,355 - ERROR - ❌ ERROR: Unexpected error (best): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,355 - INFO - ℹ️  INFO: [13/13] Try selector: worst
+2025-10-06 17:32:01,372 - ERROR - ❌ ERROR: Unexpected error (worst): 'FFmpegVideoRemuxPP'
+2025-10-06 17:32:01,372 - WARNING - ⚠️  WARNING: All selectors failed, trying final naive fallback
+2025-10-06 17:35:22,267 - INFO - ℹ️  INFO: ✅ Final naive fallback succeeded
+2025-10-06 17:35:22,271 - INFO - ℹ️  INFO: Session report saved: downloads/logs/session_report.json

@@ -5,7 +5,15 @@ silent_v1_Concordia.mp4
 
 # Ignore downloads directory
 downloads_old/
-downloads/
+downloads/*
+
+# Logs
+!downloads/logs/
+!downloads/logs/**
+
+# And allow specific working videos (will be tracked via LFS)
+!downloads/ConcordiaMHD - Symposium Plenary One_working.mp4
+!downloads/ConcordiaMHD - Symposium Plenary One_claude45-working_fhls-audiogroup-English__US_-0.mp4
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

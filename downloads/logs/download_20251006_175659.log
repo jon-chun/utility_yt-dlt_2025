@@ -1,0 +1,166 @@
+2025-10-06 17:56:59,157 - INFO - Debug level: max
+2025-10-06 17:56:59,158 - INFO - Logging initialized. Log file: downloads/logs/download_20251006_175659.log
+2025-10-06 17:56:59,158 - DEBUG - Configuration: {
+  "output_dir": "./downloads",
+  "output_template": "%(uploader)s - %(title)s.%(ext)s",
+  "format_selector": "best[ext=mp4]/best",
+  "video_quality": "best",
+  "audio_quality": "best",
+  "prefer_free_formats": true,
+  "extract_subtitles": true,
+  "auto_subtitles": true,
+  "embed_subtitles": false,
+  "download_thumbnail": true,
+  "embed_thumbnail": false,
+  "retries": 3,
+  "fragment_retries": 5,
+  "concurrent_fragments": 4,
+  "merge_output_format": "mp4",
+  "keep_video": true,
+  "verbose": true,
+  "log_level": "DEBUG",
+  "skip_postprocessing": false,
+  "debug_level": "max"
+}
+2025-10-06 17:56:59,158 - INFO - Extracting video information for: https://video.ibm.com/recorded/134516112
+2025-10-06 17:57:00,983 - ERROR - Failed to extract video info: [0;31mERROR:[0m [ustream] 134516112: No video formats found!; please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+2025-10-06 17:57:00,983 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:00,983 - INFO - ℹ️ INFO: STARTING COMPREHENSIVE DIAGNOSTIC TESTS
+2025-10-06 17:57:00,983 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:00,983 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:00,983 - INFO - ℹ️ INFO: TEST 1: Checking URL accessibility
+2025-10-06 17:57:00,983 - INFO - ℹ️ INFO: ----------------------------------------------------------------------
+2025-10-06 17:57:02,085 - INFO - ✅ SUCCESS: URL is accessible and can be parsed
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: TEST 2: Testing metadata extraction
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: ----------------------------------------------------------------------
+2025-10-06 17:57:02,086 - INFO - ✅ SUCCESS: Video title: 'Symposium Plenary One'
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: Duration: 5131.36 seconds
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: Uploader: ConcordiaMHD
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: TEST 3: Analyzing available formats
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: ----------------------------------------------------------------------
+2025-10-06 17:57:02,086 - INFO - ✅ SUCCESS: Found 7 total formats
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: HLS streaming detected: 7 HLS formats
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG:   - Video-only streams: 5
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG:   - Audio-only streams: 2
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG:   - Combined (video+audio) streams: 0
+2025-10-06 17:57:02,086 - WARNING - ⚠️ WARNING: CRITICAL: HLS streams are SEPARATED (video-only + audio-only)
+2025-10-06 17:57:02,086 - WARNING - ⚠️ WARNING: This means generic selectors like 'best' will NOT work
+2025-10-06 17:57:02,086 - INFO - ✅ SUCCESS: Recommended format combination: hls-2625+hls-audiogroup-English__US_-0
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO:   - Video: hls-2625 (1080p, avc1.100.40)
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO:   - Audio: hls-audiogroup-English__US_-0 (unknown)
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG: 
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG: Detailed format list:
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG:   [1] hls-audiogroup-English__US_-0: mp4, vcodec=none, acodec=unknown, HLS=True
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG:   [2] hls-audiogroup-English__US_-1: mp4, vcodec=none, acodec=unknown, HLS=True
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG:   [3] hls-114: mp4, 252p, vcodec=avc1.77.21, acodec=none, HLS=True
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG:   [4] hls-186: mp4, 360p, vcodec=avc1.77.30, acodec=none, HLS=True
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG:   [5] hls-271: mp4, 486p, vcodec=avc1.77.31, acodec=none, HLS=True
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG:   [6] hls-406: mp4, 720p, vcodec=avc1.100.31, acodec=none, HLS=True
+2025-10-06 17:57:02,086 - DEBUG - 🔍 DEBUG:   [7] hls-2625: mp4, 1080p, vcodec=avc1.100.40, acodec=none, HLS=True
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: TEST 4: Testing format selectors
+2025-10-06 17:57:02,086 - INFO - ℹ️ INFO: ----------------------------------------------------------------------
+2025-10-06 17:57:02,086 - INFO - ⏳ PROGRESS: Testing recommended format: 'hls-2625+hls-audiogroup-English__US_-0'
+2025-10-06 17:57:02,930 - INFO - ✅ SUCCESS: Recommended format 'hls-2625+hls-audiogroup-English__US_-0' works!
+2025-10-06 17:57:02,931 - INFO - ⏳ PROGRESS: Testing generic 'best' selector (expected to FAIL for separated HLS)
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: Generic 'best' failed as expected: [0;31mERROR:[0m [ustream] 134516112: Requested format is not available. Use --list-formats for a l...
+2025-10-06 17:57:03,843 - WARNING - ⚠️ WARNING: This confirms we MUST use explicit format combination
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: DIAGNOSTIC SUMMARY
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: URL Accessible: True
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: Metadata Extraction: True
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: Format Detection: True
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: Total Formats: 7
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: HLS Detected: True
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: HLS Separated Streams: True
+2025-10-06 17:57:03,843 - INFO - ℹ️ INFO: Generic Selectors Safe: False
+2025-10-06 17:57:03,843 - INFO - ✅ SUCCESS: Verified Working Format: hls-2625+hls-audiogroup-English__US_-0
+2025-10-06 17:57:03,844 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:03,844 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:03,844 - INFO - ℹ️ INFO: STARTING DOWNLOAD PROCESS
+2025-10-06 17:57:03,844 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:03,844 - INFO - ⏳ PROGRESS: Running pre-download diagnostics...
+2025-10-06 17:57:03,844 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:03,844 - INFO - ℹ️ INFO: STARTING COMPREHENSIVE DIAGNOSTIC TESTS
+2025-10-06 17:57:03,844 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:03,844 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:03,844 - INFO - ℹ️ INFO: TEST 1: Checking URL accessibility
+2025-10-06 17:57:03,844 - INFO - ℹ️ INFO: ----------------------------------------------------------------------
+2025-10-06 17:57:05,936 - INFO - ✅ SUCCESS: URL is accessible and can be parsed
+2025-10-06 17:57:05,938 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:05,938 - INFO - ℹ️ INFO: TEST 2: Testing metadata extraction
+2025-10-06 17:57:05,938 - INFO - ℹ️ INFO: ----------------------------------------------------------------------
+2025-10-06 17:57:05,938 - INFO - ✅ SUCCESS: Video title: 'Symposium Plenary One'
+2025-10-06 17:57:05,938 - INFO - ℹ️ INFO: Duration: 5131.36 seconds
+2025-10-06 17:57:05,938 - INFO - ℹ️ INFO: Uploader: ConcordiaMHD
+2025-10-06 17:57:05,938 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:05,938 - INFO - ℹ️ INFO: TEST 3: Analyzing available formats
+2025-10-06 17:57:05,938 - INFO - ℹ️ INFO: ----------------------------------------------------------------------
+2025-10-06 17:57:05,938 - INFO - ✅ SUCCESS: Found 7 total formats
+2025-10-06 17:57:05,938 - INFO - ℹ️ INFO: HLS streaming detected: 7 HLS formats
+2025-10-06 17:57:05,938 - DEBUG - 🔍 DEBUG:   - Video-only streams: 5
+2025-10-06 17:57:05,938 - DEBUG - 🔍 DEBUG:   - Audio-only streams: 2
+2025-10-06 17:57:05,938 - DEBUG - 🔍 DEBUG:   - Combined (video+audio) streams: 0
+2025-10-06 17:57:05,939 - WARNING - ⚠️ WARNING: CRITICAL: HLS streams are SEPARATED (video-only + audio-only)
+2025-10-06 17:57:05,939 - WARNING - ⚠️ WARNING: This means generic selectors like 'best' will NOT work
+2025-10-06 17:57:05,939 - INFO - ✅ SUCCESS: Recommended format combination: hls-2625+hls-audiogroup-English__US_-0
+2025-10-06 17:57:05,939 - INFO - ℹ️ INFO:   - Video: hls-2625 (1080p, avc1.100.40)
+2025-10-06 17:57:05,939 - INFO - ℹ️ INFO:   - Audio: hls-audiogroup-English__US_-0 (unknown)
+2025-10-06 17:57:05,939 - DEBUG - 🔍 DEBUG: 
+2025-10-06 17:57:05,939 - DEBUG - 🔍 DEBUG: Detailed format list:
+2025-10-06 17:57:05,939 - DEBUG - 🔍 DEBUG:   [1] hls-audiogroup-English__US_-0: mp4, vcodec=none, acodec=unknown, HLS=True
+2025-10-06 17:57:05,939 - DEBUG - 🔍 DEBUG:   [2] hls-audiogroup-English__US_-1: mp4, vcodec=none, acodec=unknown, HLS=True
+2025-10-06 17:57:05,939 - DEBUG - 🔍 DEBUG:   [3] hls-114: mp4, 252p, vcodec=avc1.77.21, acodec=none, HLS=True
+2025-10-06 17:57:05,939 - DEBUG - 🔍 DEBUG:   [4] hls-186: mp4, 360p, vcodec=avc1.77.30, acodec=none, HLS=True
+2025-10-06 17:57:05,939 - DEBUG - 🔍 DEBUG:   [5] hls-271: mp4, 486p, vcodec=avc1.77.31, acodec=none, HLS=True
+2025-10-06 17:57:05,939 - DEBUG - 🔍 DEBUG:   [6] hls-406: mp4, 720p, vcodec=avc1.100.31, acodec=none, HLS=True
+2025-10-06 17:57:05,939 - DEBUG - 🔍 DEBUG:   [7] hls-2625: mp4, 1080p, vcodec=avc1.100.40, acodec=none, HLS=True
+2025-10-06 17:57:05,939 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:05,939 - INFO - ℹ️ INFO: TEST 4: Testing format selectors
+2025-10-06 17:57:05,939 - INFO - ℹ️ INFO: ----------------------------------------------------------------------
+2025-10-06 17:57:05,939 - INFO - ⏳ PROGRESS: Testing recommended format: 'hls-2625+hls-audiogroup-English__US_-0'
+2025-10-06 17:57:07,407 - INFO - ✅ SUCCESS: Recommended format 'hls-2625+hls-audiogroup-English__US_-0' works!
+2025-10-06 17:57:07,407 - INFO - ⏳ PROGRESS: Testing generic 'best' selector (expected to FAIL for separated HLS)
+2025-10-06 17:57:08,229 - INFO - ℹ️ INFO: Generic 'best' failed as expected: [0;31mERROR:[0m [ustream] 134516112: Requested format is not available. Use --list-formats for a l...
+2025-10-06 17:57:08,229 - WARNING - ⚠️ WARNING: This confirms we MUST use explicit format combination
+2025-10-06 17:57:08,229 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:08,229 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: DIAGNOSTIC SUMMARY
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: URL Accessible: True
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: Metadata Extraction: True
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: Format Detection: True
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: Total Formats: 7
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: HLS Detected: True
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: HLS Separated Streams: True
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: Generic Selectors Safe: False
+2025-10-06 17:57:08,230 - INFO - ✅ SUCCESS: Verified Working Format: hls-2625+hls-audiogroup-English__US_-0
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: ======================================================================
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: DETERMINING DOWNLOAD STRATEGY
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: ----------------------------------------------------------------------
+2025-10-06 17:57:08,230 - INFO - ✅ SUCCESS: Priority #1: Tested working format: hls-2625+hls-audiogroup-English__US_-0
+2025-10-06 17:57:08,230 - WARNING - ⚠️ WARNING: Detected HLS with separated streams (IBM/Ustream pattern)
+2025-10-06 17:57:08,230 - INFO - ℹ️ INFO: Building format options for video+audio combination
+2025-10-06 17:57:08,230 - DEBUG - 🔍 DEBUG: Format option: hls-406+hls-audiogroup-English__US_-0 (720p)
+2025-10-06 17:57:08,230 - DEBUG - 🔍 DEBUG: Format option: hls-271+hls-audiogroup-English__US_-0 (486p)
+2025-10-06 17:57:08,230 - WARNING - ⚠️ WARNING: Skipping generic selectors (they won't work for separated HLS)
+2025-10-06 17:57:08,231 - INFO - ℹ️ INFO: Total format options to try: 3
+2025-10-06 17:57:08,231 - DEBUG - 🔍 DEBUG:   Option 1: hls-2625+hls-audiogroup-English__US_-0
+2025-10-06 17:57:08,231 - DEBUG - 🔍 DEBUG:   Option 2: hls-406+hls-audiogroup-English__US_-0
+2025-10-06 17:57:08,231 - DEBUG - 🔍 DEBUG:   Option 3: hls-271+hls-audiogroup-English__US_-0
+2025-10-06 17:57:08,231 - INFO - ℹ️ INFO: 
+2025-10-06 17:57:08,231 - INFO - ℹ️ INFO: ATTEMPTING DOWNLOAD
+2025-10-06 17:57:08,231 - INFO - ℹ️ INFO: ----------------------------------------------------------------------
+2025-10-06 17:57:08,231 - INFO - ⏳ PROGRESS: 
+2025-10-06 17:57:08,231 - INFO - ⏳ PROGRESS: Attempt 1/3: Format 'hls-2625+hls-audiogroup-English__US_-0'
+2025-10-06 17:57:09,306 - INFO - ✅ Download completed: ConcordiaMHD - Symposium Plenary One.fhls-2625.mp4
+2025-10-06 17:59:25,674 - INFO - ✅ Download completed: ConcordiaMHD - Symposium Plenary One.fhls-audiogroup-English__US_-0.mp4
+2025-10-06 17:59:28,983 - INFO - ✅ SUCCESS: 
+2025-10-06 17:59:28,984 - INFO - ✅ SUCCESS: Download completed successfully with format: hls-2625+hls-audiogroup-English__US_-0
+2025-10-06 17:59:28,984 - INFO - ✅ SUCCESS: ======================================================================
+2025-10-06 17:59:28,990 - INFO - ℹ️ INFO: Session report saved: downloads/logs/session_report.json

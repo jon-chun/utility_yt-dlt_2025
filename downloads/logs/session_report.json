@@ -1,0 +1,107 @@
+{
+  "timestamp": "2025-10-06T17:59:28.985036",
+  "config": {
+    "output_dir": "./downloads",
+    "output_template": "%(uploader)s - %(title)s.%(ext)s",
+    "format_selector": "best[ext=mp4]/best",
+    "video_quality": "best",
+    "audio_quality": "best",
+    "prefer_free_formats": true,
+    "extract_subtitles": true,
+    "auto_subtitles": true,
+    "embed_subtitles": false,
+    "download_thumbnail": true,
+    "embed_thumbnail": false,
+    "retries": 3,
+    "fragment_retries": 5,
+    "concurrent_fragments": 4,
+    "merge_output_format": "mp4",
+    "keep_video": true,
+    "verbose": true,
+    "log_level": "DEBUG",
+    "skip_postprocessing": false,
+    "debug_level": "max"
+  },
+  "progress_data": {},
+  "diagnostic_data": {
+    "url_accessible": true,
+    "metadata_extraction": true,
+    "format_detection": true,
+    "format_count": 7,
+    "hls_detected": true,
+    "hls_separated_streams": true,
+    "available_formats": [
+      {
+        "id": "hls-audiogroup-English__US_-0",
+        "ext": "mp4",
+        "height": null,
+        "vcodec": "none",
+        "acodec": "unknown",
+        "filesize": null,
+        "is_hls": true
+      },
+      {
+        "id": "hls-audiogroup-English__US_-1",
+        "ext": "mp4",
+        "height": null,
+        "vcodec": "none",
+        "acodec": "unknown",
+        "filesize": null,
+        "is_hls": true
+      },
+      {
+        "id": "hls-114",
+        "ext": "mp4",
+        "height": 252,
+        "vcodec": "avc1.77.21",
+        "acodec": "none",
+        "filesize": null,
+        "is_hls": true
+      },
+      {
+        "id": "hls-186",
+        "ext": "mp4",
+        "height": 360,
+        "vcodec": "avc1.77.30",
+        "acodec": "none",
+        "filesize": null,
+        "is_hls": true
+      },
+      {
+        "id": "hls-271",
+        "ext": "mp4",
+        "height": 486,
+        "vcodec": "avc1.77.31",
+        "acodec": "none",
+        "filesize": null,
+        "is_hls": true
+      },
+      {
+        "id": "hls-406",
+        "ext": "mp4",
+        "height": 720,
+        "vcodec": "avc1.100.31",
+        "acodec": "none",
+        "filesize": null,
+        "is_hls": true
+      },
+      {
+        "id": "hls-2625",
+        "ext": "mp4",
+        "height": 1080,
+        "vcodec": "avc1.100.40",
+        "acodec": "none",
+        "filesize": null,
+        "is_hls": true
+      }
+    ],
+    "recommended_format": "hls-2625+hls-audiogroup-English__US_-0",
+    "tested_working_format": "hls-2625+hls-audiogroup-English__US_-0",
+    "issues_found": [],
+    "fallback_safe": false,
+    "video_only_count": 5,
+    "audio_only_count": 2,
+    "combined_count": 0
+  },
+  "optimal_format_found": "hls-2625+hls-audiogroup-English__US_-0"
+}

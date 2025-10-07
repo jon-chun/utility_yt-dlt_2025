@@ -1,0 +1,1105 @@
+#!/usr/bin/env python3
+"""
+IBM Video Downloader using yt-dlp
+Advanced video downloading script with configurable parameters and comprehensive logging.
+
+Author: AI Research Team
+Dependencies: yt-dlp, requests
+"""
+
+import os
+import sys
+import logging
+import json
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional, Any
+import subprocess
+import argparse
+import traceback
+
+try:
+    import yt_dlp
+except ImportError:
+    print("Error: yt-dlp not installed. Run: pip install yt-dlp")
+    sys.exit(1)
+
+
+class VideoDownloader:
+    """Advanced video downloader with comprehensive logging and progress tracking."""
+    
+    def __init__(self, config: Dict[str, Any] = None, debug_level: str = 'max'):
+        """Initialize the downloader with configuration."""
+        self.config = config or self.get_default_config()
+        self.debug_level = debug_level.lower()
+        self.config['debug_level'] = self.debug_level
+        self.setup_logging()
+        self.progress_data = {}
+        self.diagnostic_data = {}
+        self.force_audio_combination = False
+        
+    def get_default_config(self) -> Dict[str, Any]:
+        """Get default configuration with popular settings."""
+        return {
+            # Output settings
+            'output_dir': './downloads',
+            'output_template': '%(uploader)s - %(title)s.%(ext)s',
+            
+            # Quality settings (popular defaults) - More flexible format selection
+            'format_selector': 'best[ext=mp4]/best[ext=webm]/best',
+            'video_quality': 'best',
+            'audio_quality': 'best',
+            
+            # Download preferences
+            'prefer_free_formats': True,
+            'extract_subtitles': True,
+            'auto_subtitles': True,
+            'embed_subtitles': False,
+            'download_thumbnail': True,
+            'embed_thumbnail': False,
+            
+            # Network settings
+            'retries': 10,
+            'extractor_retries': 10,
+            'fragment_retries': 10,
+            'concurrent_fragments': 4,
+            
+            # Post-processing
+            'merge_output_format': 'mp4',
+            'keep_video': True,
+            
+            # Logging
+            'verbose': True,
+            'log_level': 'INFO'
+        }
+    
+    def get_base_opts(self) -> Dict[str, Any]:
+        """Get base yt-dlp options common to all operations."""
+        return {
+            'http_headers': {
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+                'Referer': 'https://video.ibm.com/',
+                'Accept': '*/*',
+                'Accept-Language': 'en-US,en;q=0.5',
+            },
+            'retries': self.config['retries'],
+            'extractor_retries': self.config['extractor_retries'],
+            'fragment_retries': self.config['fragment_retries'],
+            'sleep_interval': 1,
+            'hls_prefer_ffmpeg': True,
+        }
+    
+    def setup_logging(self):
+        """Setup comprehensive logging system with debug levels."""
+        log_dir = Path(self.config['output_dir']) / 'logs'
+        log_dir.mkdir(parents=True, exist_ok=True)
+        
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        log_file = log_dir / f'download_{timestamp}.log'
+        
+        # Determine log level based on debug_level
+        if self.debug_level == 'none':
+            log_level = logging.WARNING
+            console_level = logging.ERROR
+        elif self.debug_level == 'min':
+            log_level = logging.INFO
+            console_level = logging.INFO
+        else:  # 'max'
+            log_level = logging.DEBUG
+            console_level = logging.DEBUG
+        
+        # Configure logging
+        logging.basicConfig(
+            level=log_level,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler(log_file),
+                logging.StreamHandler()
+            ],
+            force=True
+        )
+        
+        # Set console handler level separately
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(console_level)
+        
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(log_level)
+        
+        if self.debug_level != 'none':
+            self.logger.info(f"Debug level: {self.debug_level}")
+            self.logger.info(f"Logging initialized. Log file: {log_file}")
+            self.logger.info(f"yt-dlp version: {yt_dlp.version.__version__}")
+            self.logger.debug(f"Configuration: {json.dumps(self.config, indent=2)}")
+
+    def debug_print(self, message: str, level: str = 'info'):
+        """Print debug messages based on debug level."""
+        if self.debug_level == 'none':
+            return
+        elif self.debug_level == 'min' and level == 'debug':
+            return
+        
+        if level == 'debug':
+            self.logger.debug(f"🔍 DEBUG: {message}")
+        elif level == 'info':
+            self.logger.info(f"ℹ️  INFO: {message}")
+        elif level == 'warning':
+            self.logger.warning(f"⚠️  WARNING: {message}")
+        elif level == 'error':
+            self.logger.error(f"❌ ERROR: {message}")
+
+    def extract_info_with_retry(self, ydl, url: str, download: bool = False, retries: int = 3) -> Optional[Dict[str, Any]]:
+        """Extract info with retries."""
+        for attempt in range(retries):
+            try:
+                info = ydl.extract_info(url, download=download)
+                return info
+            except Exception as e:
+                self.debug_print(f"Extraction attempt {attempt + 1}/{retries} failed: {str(e)}", 'warning')
+                self.logger.error(traceback.format_exc())
+                if attempt < retries - 1:
+                    time.sleep(5)
+        return None
+
+    def run_diagnostic_tests(self, url: str) -> Dict[str, Any]:
+        """Run incremental diagnostic tests to isolate issues."""
+        self.debug_print("Starting comprehensive diagnostic tests", 'info')
+        diagnostics = {
+            'url_accessible': False,
+            'metadata_extraction': False,
+            'format_detection': False,
+            'format_count': 0,
+            'hls_detected': False,
+            'available_formats': [],
+            'recommended_format': None,
+            'issues_found': []
+        }
+        
+        try:
+            # Test 1: Basic URL accessibility
+            self.debug_print("Test 1: Checking URL accessibility", 'info')
+            ydl_opts_basic = self.get_base_opts()
+            ydl_opts_basic.update({'quiet': True, 'no_warnings': True})
+            self.debug_print(f"Diagnostic basic opts: {json.dumps(ydl_opts_basic, indent=2, default=str)}", 'debug')
+            with yt_dlp.YoutubeDL(ydl_opts_basic) as ydl:
+                info = self.extract_info_with_retry(ydl, url, download=False)
+                if info is None:
+                    diagnostics['issues_found'].append("Failed to extract info after retries")
+                    self.debug_print("❌ Failed to access URL after retries", 'error')
+                    return diagnostics
+                self.debug_print(f"Extracted info keys: {list(info.keys())}", 'debug')
+                diagnostics['url_accessible'] = True
+                self.debug_print("✅ URL is accessible", 'info')
+            
+            # Test 2: Metadata extraction
+            self.debug_print("Test 2: Testing metadata extraction", 'info')
+            if info.get('title'):
+                diagnostics['metadata_extraction'] = True
+                self.debug_print(f"✅ Metadata extracted: {info.get('title')}", 'info')
+            else:
+                diagnostics['issues_found'].append("No metadata found")
+                self.debug_print("❌ No metadata found", 'error')
+            
+            # Test 3: Format detection and analysis
+            self.debug_print("Test 3: Analyzing available formats", 'info')
+            formats = info.get('formats', [])
+            diagnostics['format_count'] = len(formats)
+            self.debug_print(f"Raw formats from info: {json.dumps(formats, default=str, indent=2)}", 'debug')
+            
+            if formats:
+                diagnostics['format_detection'] = True
+                self.debug_print(f"✅ Found {len(formats)} formats", 'info')
+                
+                # Analyze format types
+                format_details = []
+                hls_formats = []
+                regular_formats = []
+                video_only_formats = []
+                audio_only_formats = []
+                combined_formats = []
+                
+                for fmt in formats:
+                    format_id = fmt.get('format_id', 'unknown')
+                    ext = fmt.get('ext', 'unknown')
+                    height = fmt.get('height')
+                    vcodec = fmt.get('vcodec', 'unknown')
+                    acodec = fmt.get('acodec', 'unknown')
+                    filesize = fmt.get('filesize')
+                    
+                    format_info = {
+                        'id': format_id,
+                        'ext': ext,
+                        'height': height,
+                        'vcodec': vcodec,
+                        'acodec': acodec,
+                        'filesize': filesize,
+                        'is_hls': format_id.startswith('hls-')
+                    }
+                    format_details.append(format_info)
+                    
+                    if format_id.startswith('hls-'):
+                        hls_formats.append(format_info)
+                        diagnostics['hls_detected'] = True
+                        
+                        # Categorize HLS streams
+                        if height and vcodec != 'none' and acodec == 'none':
+                            video_only_formats.append(format_info)
+                        elif vcodec == 'none' and acodec != 'none':
+                            audio_only_formats.append(format_info)
+                        elif height and vcodec != 'none' and acodec != 'none':
+                            combined_formats.append(format_info)
+                    else:
+                        regular_formats.append(format_info)
+                
+                diagnostics['available_formats'] = format_details
+                diagnostics['video_only_count'] = len(video_only_formats)
+                diagnostics['audio_only_count'] = len(audio_only_formats)
+                diagnostics['combined_count'] = len(combined_formats)
+                
+                if diagnostics['hls_detected']:
+                    self.debug_print(f"🎯 HLS detected: {len(hls_formats)} HLS formats found", 'info')
+                    self.debug_print(f"   - Video-only streams: {len(video_only_formats)}", 'info')
+                    self.debug_print(f"   - Audio-only streams: {len(audio_only_formats)}", 'info')
+                    self.debug_print(f"   - Combined streams: {len(combined_formats)}", 'info')
+                    
+                    # Determine recommended format based on stream separation
+                    if combined_formats:
+                        # Use best combined format if available
+                        best_combined = max(combined_formats, key=lambda x: x['height'] or 0)
+                        diagnostics['recommended_format'] = best_combined['id']
+                        self.debug_print(f"🎯 Recommended combined format: {best_combined['id']} ({best_combined['height']}p)", 'info')
+                    elif video_only_formats and audio_only_formats:
+                        # Recommend video+audio combination
+                        best_video = max(video_only_formats, key=lambda x: x['height'] or 0)
+                        best_audio = max(audio_only_formats, key=lambda x: float(x.get('abr', 0)) or 0)
+                        combined_recommendation = f"{best_video['id']}+{best_audio['id']}"
+                        diagnostics['recommended_format'] = combined_recommendation
+                        self.debug_print(f"🎯 Recommended video+audio combination: {combined_recommendation}", 'info')
+                        self.debug_print(f"   - Video: {best_video['id']} ({best_video['height']}p)", 'info')
+                        self.debug_print(f"   - Audio: {best_audio['id']}", 'info')
+                    elif video_only_formats:
+                        # Only video available (no audio warning)
+                        best_video = max(video_only_formats, key=lambda x: x['height'] or 0)
+                        diagnostics['recommended_format'] = best_video['id']
+                        diagnostics['issues_found'].append("No audio streams detected - video only")
+                        self.debug_print(f"⚠️  Video-only format: {best_video['id']} (NO AUDIO)", 'warning')
+                
+                # Debug format details
+                if self.debug_level == 'max':
+                    self.debug_print("📋 Detailed format analysis:", 'debug')
+                    for i, fmt in enumerate(format_details):
+                        self.debug_print(f"  Format {i+1}: {fmt}", 'debug')
+                
+            else:
+                diagnostics['issues_found'].append("No formats found in metadata")
+                self.debug_print("❌ No formats found", 'error')
+            
+            # Test 4: Format selector validation
+            self.debug_print("Test 4: Testing format selectors", 'info')
+            if diagnostics['recommended_format']:
+                test_selectors = [
+                    diagnostics['recommended_format'],  # Specific HLS format
+                    'best',  # Generic best
+                    'worst',  # Generic worst
+                ]
+                
+                for selector in test_selectors:
+                    try:
+                        test_opts = self.get_base_opts()
+                        test_opts.update({
+                            'format': selector,
+                            'quiet': True,
+                            'no_warnings': True,
+                            'simulate': True
+                        })
+                        self.debug_print(f"Testing selector opts: {json.dumps(test_opts, indent=2, default=str)}", 'debug')
+                        with yt_dlp.YoutubeDL(test_opts) as test_ydl:
+                            test_info = self.extract_info_with_retry(test_ydl, url, download=False)
+                            if test_info:
+                                self.debug_print(f"Test extracted info keys for '{selector}': {list(test_info.keys())}", 'debug')
+                                self.debug_print(f"✅ Format selector '{selector}' works", 'info')
+                            else:
+                                raise Exception("Failed to extract info for selector")
+                    except Exception as e:
+                        self.debug_print(f"❌ Format selector '{selector}' failed: {str(e)}", 'warning')
+                        self.logger.error(traceback.format_exc())
+        
+        except Exception as e:
+            diagnostics['issues_found'].append(f"Diagnostic test failed: {str(e)}")
+            self.debug_print(f"❌ Diagnostic test failed: {str(e)}", 'error')
+            self.logger.error(traceback.format_exc())
+        
+        # Store diagnostics
+        self.diagnostic_data = diagnostics
+        return diagnostics
+    
+    def progress_hook(self, d: Dict[str, Any]):
+        """Progress tracking hook for yt-dlp."""
+        if d['status'] == 'downloading':
+            filename = d.get('filename', 'Unknown')
+            
+            if 'total_bytes' in d:
+                percent = (d['downloaded_bytes'] / d['total_bytes']) * 100
+                speed = d.get('speed', 0)
+                eta = d.get('eta', 0)
+                
+                self.logger.info(
+                    f"Downloading: {percent:.1f}% | "
+                    f"Speed: {self._format_bytes(speed)}/s | "
+                    f"ETA: {eta}s | "
+                    f"File: {os.path.basename(filename)}"
+                )
+                
+                # Store progress for potential external monitoring
+                self.progress_data[filename] = {
+                    'percent': percent,
+                    'speed': speed,
+                    'eta': eta,
+                    'downloaded': d['downloaded_bytes'],
+                    'total': d['total_bytes']
+                }
+            
+        elif d['status'] == 'finished':
+            filename = d.get('filename', 'Unknown')
+            self.logger.info(f"Download completed: {os.path.basename(filename)}")
+            
+        elif d['status'] == 'error':
+            self.logger.error(f"Download error: {d.get('error', 'Unknown error')}")
+    
+    def _format_bytes(self, bytes_val: Optional[float]) -> str:
+        """Format bytes into human readable format."""
+        if bytes_val is None:
+            return "N/A"
+        
+        for unit in ['B', 'KB', 'MB', 'GB']:
+            if bytes_val < 1024.0:
+                return f"{bytes_val:.1f}{unit}"
+            bytes_val /= 1024.0
+        return f"{bytes_val:.1f}TB"
+    
+    def list_available_formats(self, url: str) -> List[Dict[str, Any]]:
+        """List all available formats for the video."""
+        self.logger.info(f"Listing available formats for: {url}")
+        
+        ydl_opts = self.get_base_opts()
+        ydl_opts.update({
+            'quiet': not self.config['verbose'],
+            'no_warnings': False,
+            'extract_flat': False,
+        })
+        self.debug_print(f"List formats opts: {json.dumps(ydl_opts, indent=2, default=str)}", 'debug')
+        
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = self.extract_info_with_retry(ydl, url, download=False)
+                if info is None:
+                    raise Exception("Failed to extract info for listing formats")
+                self.debug_print(f"Extracted info keys: {list(info.keys())}", 'debug')
+                formats = info.get('formats', [])
+                self.debug_print(f"Raw formats: {json.dumps(formats, default=str, indent=2)}", 'debug')
+                
+                self.logger.info(f"Total available formats: {len(formats)}")
+                print(f"\n{'='*80}")
+                print("AVAILABLE FORMATS:")
+                print(f"{'='*80}")
+                
+                for i, fmt in enumerate(formats):
+                    format_id = fmt.get('format_id', 'N/A')
+                    ext = fmt.get('ext', 'N/A')
+                    height = fmt.get('height', 'N/A')
+                    width = fmt.get('width', 'N/A')
+                    filesize = fmt.get('filesize', 'N/A')
+                    tbr = fmt.get('tbr', 'N/A')
+                    vcodec = fmt.get('vcodec', 'N/A')
+                    acodec = fmt.get('acodec', 'N/A')
+                    
+                    print(f"{i+1:2d}. Format ID: {format_id}")
+                    print(f"    Extension: {ext}")
+                    print(f"    Resolution: {width}x{height}" if width != 'N/A' and height != 'N/A' else f"    Height: {height}p" if height != 'N/A' else "    Resolution: N/A")
+                    print(f"    Bitrate: {tbr} kbps" if tbr != 'N/A' else "    Bitrate: N/A")
+                    print(f"    Video Codec: {vcodec}")
+                    print(f"    Audio Codec: {acodec}")
+                    print(f"    File Size: {self._format_bytes(filesize) if filesize != 'N/A' else 'N/A'}")
+                    print()
+                
+                return formats
+                
+        except Exception as e:
+            self.logger.error(f"Failed to list formats: {str(e)}")
+            self.logger.error(traceback.format_exc())
+            raise
+
+    def get_video_info(self, url: str) -> Dict[str, Any]:
+        """Extract video information without downloading."""
+        self.logger.info(f"Extracting video information for: {url}")
+        
+        ydl_opts = self.get_base_opts()
+        ydl_opts.update({
+            'quiet': not self.config['verbose'],
+            'no_warnings': False,
+            'extract_flat': False,
+        })
+        self.debug_print(f"Get video info opts: {json.dumps(ydl_opts, indent=2, default=str)}", 'debug')
+        
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = self.extract_info_with_retry(ydl, url, download=False)
+                if info is None:
+                    raise Exception("Failed to extract video info")
+                self.debug_print(f"Extracted info keys: {list(info.keys())}", 'debug')
+                
+                # Log essential video information
+                self.logger.info(f"Title: {info.get('title', 'N/A')}")
+                self.logger.info(f"Duration: {info.get('duration', 'N/A')} seconds")
+                self.logger.info(f"Uploader: {info.get('uploader', 'N/A')}")
+                self.logger.info(f"View count: {info.get('view_count', 'N/A')}")
+                
+                # Log available formats with better analysis
+                if 'formats' in info:
+                    formats = info['formats']
+                    self.logger.info(f"Available formats: {len(formats)}")
+                    self.debug_print(f"Raw formats: {json.dumps(formats, default=str, indent=2)}", 'debug')
+                    
+                    # Analyze available qualities
+                    available_heights = [f.get('height') for f in formats if f.get('height')]
+                    available_exts = list(set([f.get('ext') for f in formats if f.get('ext')]))
+                    
+                    if available_heights:
+                        max_height = max(available_heights)
+                        self.logger.info(f"Maximum available resolution: {max_height}p")
+                    
+                    self.logger.info(f"Available extensions: {', '.join(available_exts)}")
+                    
+                    # Show sample formats
+                    for i, fmt in enumerate(formats[:5]):  # Show first 5 formats
+                        quality_info = f"{fmt.get('format_id', 'N/A')} - {fmt.get('ext', 'N/A')}"
+                        if fmt.get('height'):
+                            quality_info += f" - {fmt['height']}p"
+                        if fmt.get('filesize'):
+                            quality_info += f" - {self._format_bytes(fmt['filesize'])}"
+                        self.logger.info(f"  Format {i+1}: {quality_info}")
+                
+                return info
+                
+        except Exception as e:
+            self.logger.error(f"Failed to extract video info: {str(e)}")
+            self.logger.error(traceback.format_exc())
+            raise
+    
+    def get_optimal_format_selector(self, url: str, preferred_quality: str = "best") -> str:
+        """Determine optimal format selector based on available formats and diagnostics."""
+        try:
+            self.debug_print("Running diagnostics to determine optimal format", 'info')
+            diagnostics = self.run_diagnostic_tests(url)
+            
+            if not diagnostics['format_detection']:
+                self.debug_print("No formats detected, using fallback 'best'", 'warning')
+                return 'best'
+            
+            # Handle HLS formats specially
+            if diagnostics['hls_detected']:
+                self.debug_print("HLS stream detected, analyzing video/audio separation", 'info')
+                
+                formats = diagnostics.get('available_formats', [])
+                
+                # Separate video and audio streams
+                video_streams = [f for f in formats if f.get('height') and f.get('vcodec') != 'none']
+                audio_streams = [f for f in formats if f.get('vcodec') == 'none' and f.get('acodec') != 'none']
+                combined_streams = [f for f in formats if f.get('height') and f.get('acodec') != 'none']
+                
+                self.debug_print(f"Video-only streams: {len(video_streams)}", 'debug')
+                self.debug_print(f"Audio-only streams: {len(audio_streams)}", 'debug')
+                self.debug_print(f"Combined streams: {len(combined_streams)}", 'debug')
+                
+                # Case 1: Video and audio are combined in single streams
+                if combined_streams:
+                    best_combined = max(combined_streams, key=lambda x: x.get('height', 0))
+                    self.debug_print(f"Using combined video+audio stream: {best_combined['id']}", 'info')
+                    return best_combined['id']
+                
+                # Case 2: Video and audio are separated (IBM Video case)
+                elif video_streams and audio_streams:
+                    # Select best video stream
+                    best_video = max(video_streams, key=lambda x: x.get('height', 0))
+                    
+                    # Select best audio stream (highest abr)
+                    best_audio = max(audio_streams, key=lambda x: float(x.get('abr', 0)) or 0)
+                    
+                    # Create combined format selector
+                    combined_format = f"{best_video['id']}+{best_audio['id']}"
+                    self.debug_print(f"Combining video+audio streams: {combined_format}", 'info')
+                    self.debug_print(f"Video: {best_video['id']} ({best_video.get('height')}p)", 'info')
+                    self.debug_print(f"Audio: {best_audio['id']}", 'info')
+                    
+                    return combined_format
+                
+                # Case 3: Only video streams available
+                elif video_streams:
+                    if self.force_audio_combination:
+                        self.debug_print("Force audio combination enabled but no audio streams found!", 'error')
+                        # Try generic format selector that might find audio
+                        return 'best+bestaudio/best'
+                    else:
+                        best_video = max(video_streams, key=lambda x: x.get('height', 0))
+                        self.debug_print(f"Only video streams available, using: {best_video['id']}", 'warning')
+                        self.debug_print("Warning: This video may not have audio!", 'warning')
+                        return best_video['id']
+                
+                # Case 4: Fallback to any available HLS format
+                else:
+                    if diagnostics['recommended_format']:
+                        self.debug_print(f"Using fallback recommended format: {diagnostics['recommended_format']}", 'warning')
+                        return diagnostics['recommended_format']
+            
+            # Regular format handling (non-HLS)
+            info = self.get_video_info(url)
+            formats = info.get('formats', [])
+            
+            if not formats:
+                return 'best'
+            
+            # Analyze available formats
+            available_heights = [f.get('height') for f in formats if f.get('height')]
+            available_exts = [f.get('ext') for f in formats if f.get('ext')]
+            
+            # Determine best available extension
+            ext_priority = ['mp4', 'webm', 'mkv', 'flv']
+            best_ext = None
+            for ext in ext_priority:
+                if ext in available_exts:
+                    best_ext = ext
+                    break
+            
+            # Determine quality constraint
+            if available_heights:
+                max_height = max(available_heights)
+                self.debug_print(f"Adjusting format selector for max available resolution: {max_height}p", 'info')
+                
+                if preferred_quality == "best":
+                    if best_ext:
+                        return f'best[ext={best_ext}]+bestaudio/best'
+                    else:
+                        return 'best+bestaudio/best'
+                else:
+                    # Parse preferred quality (e.g., "1080p" -> 1080)
+                    try:
+                        preferred_height = int(preferred_quality.replace('p', ''))
+                        target_height = min(preferred_height, max_height)
+                        
+                        if best_ext:
+                            return f'best[height<={target_height}][ext={best_ext}]+bestaudio/best[ext={best_ext}]+bestaudio/best'
+                        else:
+                            return f'best[height<={target_height}]+bestaudio/best'
+                    except ValueError:
+                        return f'best[ext={best_ext}]+bestaudio/best' if best_ext else 'best+bestaudio/best'
+            else:
+                # No height info available, just use extension preference with audio
+                return f'best[ext={best_ext}]+bestaudio/best' if best_ext else 'best+bestaudio/best'
+                
+        except Exception as e:
+            self.debug_print(f"Could not determine optimal format, using fallback: {str(e)}", 'warning')
+            self.logger.error(traceback.format_exc())
+            return 'best+bestaudio/best'
+    
+    def download_video(self, url: str) -> bool:
+        """Download video with configured parameters and enhanced diagnostics."""
+        self.debug_print(f"Starting download process for: {url}", 'info')
+        
+        # Ensure output directory exists
+        output_dir = Path(self.config['output_dir'])
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Run comprehensive diagnostics first
+        self.debug_print("Running pre-download diagnostics", 'info')
+        diagnostics = self.run_diagnostic_tests(url)
+        
+        if not diagnostics['url_accessible']:
+            self.debug_print("URL not accessible, aborting download", 'error')
+            return False
+        
+        if not diagnostics['format_detection']:
+            self.debug_print("No formats detected, trying basic download", 'warning')
+        
+        # Extract full info once
+        self.debug_print("Extracting full video info for download", 'info')
+        ydl_opts_extract = self.get_base_opts()
+        ydl_opts_extract.update({
+            'quiet': self.debug_level == 'none',
+            'no_warnings': self.debug_level == 'none',
+        })
+        with yt_dlp.YoutubeDL(ydl_opts_extract) as ydl_extract:
+            info = self.extract_info_with_retry(ydl_extract, url, download=False)
+            if info is None:
+                self.debug_print("Failed to extract info for download", 'error')
+                return False
+        
+        # Determine optimal format selector
+        try:
+            if diagnostics.get('recommended_format'):
+                optimal_format = diagnostics['recommended_format']
+                self.debug_print(f"Using diagnostics-recommended format: {optimal_format}", 'info')
+            else:
+                optimal_format = self.get_optimal_format_selector(url, self.config['video_quality'])
+                self.debug_print(f"Using computed optimal format: {optimal_format}", 'info')
+        except Exception as e:
+            self.debug_print(f"Could not determine optimal format, using configured default: {str(e)}", 'warning')
+            self.logger.error(traceback.format_exc())
+            optimal_format = self.config['format_selector']
+        
+        # Prepare multiple format options for fallback
+        format_options = []
+        
+        if diagnostics.get('hls_detected'):
+            # For HLS, prioritize proper video+audio combinations
+            video_only_formats = [
+                f for f in diagnostics.get('available_formats', []) 
+                if f.get('is_hls') and f.get('height') and f.get('vcodec') != 'none' and f.get('acodec') == 'none'
+            ]
+            audio_only_formats = [
+                f for f in diagnostics.get('available_formats', []) 
+                if f.get('is_hls') and f.get('vcodec') == 'none' and f.get('acodec') != 'none'
+            ]
+            combined_formats = [
+                f for f in diagnostics.get('available_formats', []) 
+                if f.get('is_hls') and f.get('height') and f.get('acodec') != 'none'
+            ]
+            
+            # Add combined formats first (if available)
+            if combined_formats:
+                combined_formats.sort(key=lambda x: x.get('height', 0), reverse=True)
+                format_options.extend([f['id'] for f in combined_formats[:3]])
+            
+            # Add video+audio combinations
+            if video_only_formats and audio_only_formats:
+                video_only_formats.sort(key=lambda x: x.get('height', 0), reverse=True)
+                for video in video_only_formats[:3]:  # Top 3 video qualities
+                    for audio in audio_only_formats[:2]:  # Top 2 audio options
+                        format_options.append(f"{video['id']}+{audio['id']}")
+            
+            # Add fallback individual video streams (will have no audio)
+            if video_only_formats:
+                format_options.extend([f['id'] for f in video_only_formats[:2]])
+        
+        # Add generic fallbacks
+        format_options.extend([
+            optimal_format,
+            'best+bestaudio/best',
+            'best[ext=mp4]+bestaudio[ext=mp4]/best',
+            'best',
+            'worst'
+        ])
+        
+        # Remove duplicates while preserving order
+        format_options = list(dict.fromkeys(format_options))
+        
+        self.debug_print(f"Format options to try: {format_options}", 'debug')
+        
+        # Configure yt-dlp options
+        base_ydl_opts = self.get_base_opts()
+        base_ydl_opts.update({
+            # Output settings
+            'outtmpl': str(output_dir / self.config['output_template']),
+            
+            # Download settings
+            'concurrent_fragment_downloads': self.config['concurrent_fragments'],
+            
+            # Subtitles
+            'writesubtitles': self.config['extract_subtitles'],
+            'writeautomaticsub': self.config['auto_subtitles'],
+            'embedsubtitles': self.config['embed_subtitles'],
+            
+            # Thumbnails
+            'writethumbnail': self.config['download_thumbnail'],
+            'embedthumbnail': self.config['embed_thumbnail'],
+            
+            # Post-processing
+            'merge_output_format': self.config['merge_output_format'],
+            'keepvideo': self.config['keep_video'],
+            
+            # Progress tracking
+            'progress_hooks': [self.progress_hook],
+            
+            # Logging
+            'quiet': self.debug_level == 'none',
+            'no_warnings': self.debug_level == 'none',
+            
+            # Error handling
+            'ignoreerrors': False,
+        })
+        self.debug_print(f"Base download opts: {json.dumps(base_ydl_opts, indent=2, default=str)}", 'debug')
+        
+        # Add post-processors if needed
+        postprocessors = []
+        
+        if self.config['merge_output_format']:
+            postprocessors.append({
+                'key': 'FFmpegVideoConvertor',
+                'preferedformat': self.config['merge_output_format'],
+            })
+        
+        # Add ffmpeg post-processor to fix HLS timestamp issues (QuickTime compatibility)
+        if diagnostics.get('hls_detected'):
+            self.debug_print("Adding FFmpeg post-processor for HLS compatibility", 'info')
+            postprocessors.append({
+                'key': 'FFmpegVideoRemux',
+                'preferedformat': self.config['merge_output_format'] or 'mp4',
+            })
+        
+        if postprocessors:
+            base_ydl_opts['postprocessors'] = postprocessors
+        
+        # Try each format option using the pre-extracted info
+        for i, format_selector in enumerate(format_options):
+            try:
+                self.debug_print(f"Attempt {i+1}/{len(format_options)}: Trying format '{format_selector}'", 'info')
+                
+                ydl_opts = base_ydl_opts.copy()
+                ydl_opts['format'] = format_selector
+                self.debug_print(f"Attempt opts: {json.dumps(ydl_opts, indent=2, default=str)}", 'debug')
+                
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    ydl.process_video_result(info, download=True)
+                
+                self.debug_print(f"✅ Download completed successfully with format: {format_selector}", 'info')
+                return True
+                
+            except yt_dlp.DownloadError as e:
+                error_msg = str(e)
+                self.debug_print(f"❌ Format '{format_selector}' failed: {error_msg}", 'warning')
+                self.logger.error(traceback.format_exc())
+                
+                # Check if it's a format-specific error
+                if "Requested format is not available" in error_msg or "No video formats found" in error_msg:
+                    continue  # Try next format
+                else:
+                    # Other errors might be more serious
+                    self.debug_print(f"Serious download error with '{format_selector}': {error_msg}", 'error')
+                    continue
+                    
+            except Exception as e:
+                self.debug_print(f"❌ Unexpected error with format '{format_selector}': {str(e)}", 'error')
+                self.logger.error(traceback.format_exc())
+                continue
+        
+        # If all formats failed, try one last desperate attempt
+        self.debug_print("All format options failed, trying final fallback", 'warning')
+        try:
+            final_opts = self.get_base_opts()
+            final_opts.update({
+                'outtmpl': str(output_dir / self.config['output_template']),
+                'quiet': False,
+                'no_warnings': False,
+            })
+            self.debug_print(f"Final fallback opts: {json.dumps(final_opts, indent=2, default=str)}", 'debug')
+            
+            with yt_dlp.YoutubeDL(final_opts) as ydl:
+                ydl.process_video_result(info, download=True)
+            
+            self.debug_print("✅ Final fallback download succeeded", 'info')
+            return True
+            
+        except Exception as final_error:
+            self.debug_print(f"❌ Final fallback also failed: {str(final_error)}", 'error')
+            self.logger.error(traceback.format_exc())
+            
+            # Provide diagnostic summary
+            self.debug_print("📊 Download failure summary:", 'error')
+            self.debug_print(f"  - URL accessible: {diagnostics.get('url_accessible', False)}", 'error')
+            self.debug_print(f"  - Formats found: {diagnostics.get('format_count', 0)}", 'error')
+            self.debug_print(f"  - HLS detected: {diagnostics.get('hls_detected', False)}", 'error')
+            self.debug_print(f"  - Formats tried: {len(format_options)}", 'error')
+            if diagnostics.get('issues_found'):
+                for issue in diagnostics['issues_found']:
+                    self.debug_print(f"  - Issue: {issue}", 'error')
+            
+            return False
+    
+    def verify_video_file(self, file_path: Path) -> Dict[str, Any]:
+        """Verify video file integrity and get basic information."""
+        verification = {
+            'exists': False,
+            'playable': False,
+            'duration': None,
+            'size_mb': 0,
+            'issues': []
+        }
+        
+        try:
+            if file_path.exists():
+                verification['exists'] = True
+                verification['size_mb'] = file_path.stat().st_size / (1024**2)
+                
+                # Try to get video info using ffprobe if available
+                try:
+                    import subprocess
+                    result = subprocess.run([
+                        'ffprobe', '-v', 'quiet', '-print_format', 'json', 
+                        '-show_format', str(file_path)
+                    ], capture_output=True, text=True, timeout=30)
+                    
+                    if result.returncode == 0:
+                        import json
+                        probe_data = json.loads(result.stdout)
+                        if 'format' in probe_data:
+                            verification['playable'] = True
+                            verification['duration'] = float(probe_data['format'].get('duration', 0))
+                    else:
+                        verification['issues'].append("ffprobe failed - video may have issues")
+                        self.debug_print(f"ffprobe output: {result.stderr}", 'debug')
+                        
+                except (subprocess.TimeoutExpired, FileNotFoundError, json.JSONDecodeError) as e:
+                    verification['issues'].append(f"ffprobe not available or error - cannot verify video integrity: {str(e)}")
+                    self.logger.error(traceback.format_exc())
+                except Exception as e:
+                    verification['issues'].append(f"Video verification error: {str(e)}")
+                    self.logger.error(traceback.format_exc())
+                    
+            else:
+                verification['issues'].append("Video file not found")
+                
+        except Exception as e:
+            verification['issues'].append(f"File access error: {str(e)}")
+            self.logger.error(traceback.format_exc())
+            
+        return verification
+
+    def save_progress_report(self):
+        """Save progress report to file."""
+        if not self.progress_data and not self.diagnostic_data:
+            return
+            
+        report_file = Path(self.config['output_dir']) / 'logs' / 'session_report.json'
+        report_data = {
+            'timestamp': datetime.now().isoformat(),
+            'config': self.config,
+            'progress_data': self.progress_data,
+            'diagnostic_data': self.diagnostic_data
+        }
+        
+        try:
+            with open(report_file, 'w') as f:
+                json.dump(report_data, f, indent=2, default=str)
+            self.debug_print(f"Session report saved: {report_file}", 'info')
+        except Exception as e:
+            self.debug_print(f"Failed to save session report: {str(e)}", 'error')
+            self.logger.error(traceback.format_exc())
+
+
+def main():
+    """Main function with command-line interface."""
+    parser = argparse.ArgumentParser(description='Download IBM videos using yt-dlp')
+    parser.add_argument('url', nargs='?', 
+                       default='https://video.ibm.com/recorded/134516112',
+                       help='Video URL to download')
+    parser.add_argument('--output-dir', '-o', default='./downloads',
+                       help='Output directory for downloads')
+    parser.add_argument('--quality', '-q', default='best',
+                       choices=['480p', '720p', '1080p', 'best'],
+                       help='Video quality preference')
+    parser.add_argument('--format', '-f', default='mp4',
+                       choices=['mp4', 'webm', 'mkv'],
+                       help='Output format preference')
+    parser.add_argument('--info-only', action='store_true',
+                       help='Only extract video information, do not download')
+    parser.add_argument('--list-formats', action='store_true',
+                       help='List all available formats for the video')
+    parser.add_argument('--diagnostics', action='store_true',
+                       help='Run comprehensive diagnostic tests')
+    parser.add_argument('--fix-audio', action='store_true',
+                       help='Ensure video+audio combination for HLS streams (fixes silent videos)')
+    parser.add_argument('--debug-level', choices=['none', 'min', 'max'], default='max',
+                       help='Debug output level (default: max)')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                       help='Enable verbose logging (equivalent to --debug-level max)')
+    
+    args = parser.parse_args()
+    
+    # Handle verbose flag
+    if args.verbose:
+        args.debug_level = 'max'
+    
+    # Handle fix-audio flag
+    force_audio_combination = args.fix_audio
+    
+    # Create custom configuration based on arguments
+    config = {
+        'output_dir': args.output_dir,
+        'output_template': '%(uploader)s - %(title)s.%(ext)s',
+        'format_selector': f'best[ext={args.format}]/best',  # Simplified default
+        'video_quality': args.quality,
+        'audio_quality': 'best',
+        'prefer_free_formats': True,
+        'extract_subtitles': True,
+        'auto_subtitles': True,
+        'embed_subtitles': False,
+        'download_thumbnail': True,
+        'embed_thumbnail': False,
+        'retries': 10,
+        'extractor_retries': 10,
+        'fragment_retries': 10,
+        'concurrent_fragments': 4,
+        'merge_output_format': args.format,
+        'keep_video': True,
+        'verbose': args.debug_level != 'none',
+        'log_level': 'DEBUG' if args.debug_level == 'max' else 'INFO'
+    }
+    
+    # Initialize downloader with debug level
+    downloader = VideoDownloader(config, debug_level=args.debug_level)
+    
+    # Set force audio combination if requested
+    if force_audio_combination:
+        downloader.force_audio_combination = True
+    
+    try:
+        if args.debug_level != 'none':
+            print(f"{'='*70}")
+            print(f"🎬 IBM Video Downloader v2.0 (Debug Level: {args.debug_level.upper()})")
+            print(f"{'='*70}")
+            print(f"📋 URL: {args.url}")
+            print(f"📁 Output Directory: {args.output_dir}")
+            print(f"🎯 Quality: {args.quality}")
+            print(f"📄 Format: {args.format}")
+            print(f"🔍 Debug Level: {args.debug_level}")
+            if force_audio_combination:
+                print(f"🔊 Audio Fix: Enabled (forces video+audio combination)")
+            print(f"{'='*70}")
+        
+        # Run diagnostics if requested
+        if args.diagnostics:
+            print("\n🔍 RUNNING COMPREHENSIVE DIAGNOSTICS:")
+            print("="*50)
+            diagnostics = downloader.run_diagnostic_tests(args.url)
+            
+            print(f"\n📊 DIAGNOSTIC RESULTS:")
+            print(f"✅ URL Accessible: {diagnostics.get('url_accessible', False)}")
+            print(f"✅ Metadata Extraction: {diagnostics.get('metadata_extraction', False)}")
+            print(f"✅ Format Detection: {diagnostics.get('format_detection', False)}")
+            print(f"📊 Format Count: {diagnostics.get('format_count', 0)}")
+            print(f"🎯 HLS Detected: {diagnostics.get('hls_detected', False)}")
+            if diagnostics.get('recommended_format'):
+                print(f"🎯 Recommended Format: {diagnostics['recommended_format']}")
+            
+            if diagnostics.get('issues_found'):
+                print(f"\n⚠️  ISSUES FOUND:")
+                for issue in diagnostics['issues_found']:
+                    print(f"  - {issue}")
+            
+            print("\n" + "="*50)
+            return
+        
+        # List formats if requested
+        if args.list_formats:
+            print("\n🔍 LISTING AVAILABLE FORMATS:")
+            print("="*50)
+            try:
+                downloader.list_available_formats(args.url)
+            except Exception as e:
+                print(f"❌ Could not list formats: {str(e)}")
+                print("🔧 Trying diagnostic approach...")
+                diagnostics = downloader.run_diagnostic_tests(args.url)
+                if diagnostics.get('available_formats'):
+                    print(f"\n📋 FORMATS FOUND VIA DIAGNOSTICS:")
+                    for i, fmt in enumerate(diagnostics['available_formats']):
+                        print(f"{i+1:2d}. Format ID: {fmt['id']}")
+                        print(f"    Extension: {fmt['ext']}")
+                        print(f"    Height: {fmt['height']}p" if fmt['height'] else "    Height: N/A")
+                        print(f"    Video Codec: {fmt['vcodec']}")
+                        print(f"    Audio Codec: {fmt['acodec']}")
+                        print(f"    HLS Format: {fmt['is_hls']}")
+                        print()
+            return
+        
+        # Extract video information
+        try:
+            video_info = downloader.get_video_info(args.url)
+        except Exception as e:
+            print(f"❌ Failed to extract video information: {str(e)}")
+            print("🔧 Trying diagnostic fallback...")
+            diagnostics = downloader.run_diagnostic_tests(args.url)
+            if not diagnostics.get('url_accessible'):
+                print("❌ URL is not accessible. Please check the URL and try again.")
+                sys.exit(1)
+            video_info = {'title': 'Unknown', 'duration': 'Unknown', 'uploader': 'Unknown'}
+        
+        if args.info_only:
+            print(f"\n📋 VIDEO INFORMATION:")
+            print(f"Title: {video_info.get('title', 'N/A')}")
+            print(f"Duration: {video_info.get('duration', 'N/A')} seconds")
+            print(f"Uploader: {video_info.get('uploader', 'N/A')}")
+            description = video_info.get('description', 'N/A')
+            if description and len(description) > 200:
+                description = description[:200] + "..."
+            print(f"Description: {description}")
+            return
+        
+        # Download video
+        print(f"\n🚀 STARTING DOWNLOAD...")
+        success = downloader.download_video(args.url)
+        
+        # Save progress report
+        downloader.save_progress_report()
+        
+        if success:
+            print(f"\n{'='*70}")
+            print("✅ DOWNLOAD COMPLETED SUCCESSFULLY!")
+            print(f"📁 Files saved to: {args.output_dir}")
+            
+            # Check if video file exists and provide playback suggestions
+            video_files = list(Path(args.output_dir).glob("*.mp4"))
+            if video_files:
+                video_file = video_files[0]
+                file_size = video_file.stat().st_size / (1024**3)  # GB
+                print(f"🎥 Video: {video_file.name} ({file_size:.2f} GB)")
+                
+                # Check for audio issues based on diagnostics
+                if hasattr(downloader, 'diagnostic_data'):
+                    diagnostics = downloader.diagnostic_data
+                    if (diagnostics.get('hls_detected') and 
+                        diagnostics.get('video_only_count', 0) > 0 and 
+                        diagnostics.get('audio_only_count', 0) > 0):
+                        print(f"🔊 Audio Status: Video+Audio combined automatically")
+                    elif diagnostics.get('video_only_count', 0) > 0 and diagnostics.get('audio_only_count', 0) == 0:
+                        print(f"⚠️  Audio Status: No audio detected (video-only stream)")
+                        print(f"💡 Suggestion: This appears to be a video-only stream")
+                
+                # Provide playback suggestions
+                print(f"🎬 To play the video:")
+                print(f"   macOS: open '{video_file}'")
+                print(f"   Linux: vlc '{video_file}' or mpv '{video_file}'")
+                print(f"   Windows: start '{video_file}'")
+                print(f"   Universal: Use VLC Media Player for best compatibility")
+                
+                if diagnostics and diagnostics.get('hls_detected'):
+                    print(f"ℹ️  Note: HLS videos may need VLC or mpv for optimal playback")
+            
+            print(f"{'='*70}")
+        else:
+            print(f"\n{'='*70}")
+            print("❌ DOWNLOAD FAILED")
+            print("🔧 Troubleshooting suggestions:")
+            print("  1. Try: --diagnostics (to run full diagnostic tests)")
+            print("  2. Try: --list-formats (to see available formats)")
+            print("  3. Try: --debug-level max (for detailed debugging)")
+            print("  4. Try: different --quality settings (best, 720p, 480p)")
+            print("  5. Check the log files in downloads/logs/ for details")
+            print("  6. Update yt-dlp: yt-dlp -U")
+            print("  7. Check network connection and try again")
+            print("  8. Try with --fix-audio flag")
+            print(f"{'='*70}")
+            sys.exit(1)
+            
+    except KeyboardInterrupt:
+        print("\n🛑 Download interrupted by user.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n❌ Unexpected error: {str(e)}")
+        print("🔧 Try using --diagnostics to debug the issue.")
+        if args.debug_level == 'none':
+            print("🔧 Or use --debug-level max for detailed error information.")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
