@@ -1,0 +1,2109 @@
+
+╭─── Claude Code v2.1.7 ───────────────────────────────────────────────────────╮
+│                                      │ Tips for getting started              │
+│           Welcome back Jon!          │ ✔ Run /init to create a CLAUDE.md fi… │
+│                                      │ ───────────────────────────────────── │
+│                ▐▛███▜▌               │ Recent activity                       │
+│               ▝▜█████▛▘              │ No recent activity                    │
+│                 ▘▘ ▝▝                │                                       │
+│                                      │                                       │
+│   Opus 4.5 · Claude Max · Jon Chun   │                                       │
+│      ~/code/utility_yt-dlt_2025      │                                       │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+❯ /init 
+
+⏺ Search(pattern: "**/*.md")
+  ⎿  Found 6 files (ctrl+o to expand)
+
+⏺ Search(pattern: "**/*.py")
+  ⎿  Found 100 files (ctrl+o to expand)
+
+⏺ Search(pattern: "**/requirements*.txt")
+  ⎿  Found 1 file (ctrl+o to expand)
+
+⏺ Search(pattern: "**/*.json")
+  ⎿  Found 3 files (ctrl+o to expand)
+
+⏺ Search(pattern: ".cursor*/**/*")
+  ⎿  Found 0 files 
+
+⏺ Search(pattern: ".github/**/*")
+  ⎿  Found 0 files 
+
+⏺ Let me read the key project files to understand the codebase structure.
+
+⏺ Read(README.md)
+  ⎿  Read 363 lines
+
+⏺ Read(main.py)
+  ⎿  Read 7 lines
+
+⏺ Read(requirements.txt)
+  ⎿  Read 11 lines
+
+⏺ Read(config.json)
+  ⎿  Read 32 lines
+
+⏺ Read(usage_guide.md)
+  ⎿  Read 296 lines
+
+⏺ Let me check for the main script file and any other source files.
+
+⏺ Search(pattern: "*.py")
+  ⎿  Found 100 files (ctrl+o to expand)
+
+⏺ Search(pattern: ".gitignore")
+  ⎿  Found 2 files (ctrl+o to expand)
+
+⏺ Read(docs/chat_notes.md)
+  ⎿  Read 11 lines
+
+⏺ Let me search for the main script file that's referenced in the documentation.
+
+⏺ Bash(ls -la /Users/jonc/code/utility_yt-dlt_2025/*.py 2>/dev/null || echo "No
+      .py files in root")
+  ⎿ -rw-r--r--@ 1 jonc  staff  40741 Oct  6 17:56                        
+    /Users/jonc/code/utility_
+    yt-dlt_2025/get_ibm_yt-dlt_claude45_20251006.py
+    -rw-r--r--@ 1 jonc  staff  42493 Oct  6 17:26
+    /Users/jonc/code/utility_
+    … +7 lines (ctrl+o to expand)
+
+⏺ Search(pattern: "get_ibm*.py")
+  ⎿  Found 4 files (ctrl+o to expand)
+
+⏺ Let me read the most recent working script to understand the architecture.
+
+⏺ Read(get_ibm_yt-dlt_gpt5_working_20251006.py)
+  ⎿  Read 915 lines
+
+⏺ Read(.gitignore)
+  ⎿  Read 225 lines
+
+⏺ Now I have a good understanding of the codebase. Let me create the CLAUDE.md file.
+
+⏺ Write(CLAUDE.md)
+  ⎿  Wrote 98 lines to CLAUDE.md                                         
+      1 # CLAUDE.md
+      2 This file provides guidance to Claude Code (claude.ai/code) when 
+        working with code in this repository.
+      3 ## Project Overview
+      4 IBM Video Downloader - a Python utility for downloading videos fr
+        om IBM Video (video.ibm.com) and other platforms using yt-dlp. De
+        signed for AI research workflows with HLS stream support, compreh
+        ensive logging, and intelligent format detection.
+      5 ## Common Commands
+     … +88 lines (ctrl+o to expand)
+
+⏺ I've created the CLAUDE.md file with:
+
+  1. Project overview - What the tool does (IBM Video/yt-dlp downloader for AI research)
+  2. Common commands - Setup, download, diagnostics, format listing, debug levels, cookie usage
+  3. Architecture - Key class (VideoDownloader), main methods, HLS handling logic
+  4. Configuration - Format selector presets from config.json
+  5. Output structure - Where logs and downloads go
+  6. Dependencies - Core requirements including FFmpeg
+  7. Script variants - Notes on the multiple script versions in the repo
+
+  The file is concise and focuses on what's needed to work productively in this codebase - the download workflow, HLS stream handling (which is the tricky part), and the diagnostic tools available.
+
+✻ Cogitated for 1m 1s
+
+❯ create a python program get_yt-video-by-id.py that pulls a                
+  QUALITY=['low'(default),'medium','high'],                                 
+  SIZE=['low'(default),'medium','high'] LANGUAGE='en'(default) with         
+  YT_VIDEO_ID='L7gv9aGB7VY'                                                 
+
+⏺ Write(get_yt-video-by-id.py)
+  ⎿  Wrote 193 lines to get_yt-video-by-id.py                            
+      1 #!/usr/bin/env python3
+      2 """
+      3 YouTube Video Downloader by ID
+      4 Downloads YouTube videos with configurable quality, size, and sub
+        title language.
+      5 """
+      6 import argparse
+      7 import sys
+      8 from pathlib import Path
+     … +183 lines (ctrl+o to expand)
+
+⏺ Created get_yt-video-by-id.py. Here's how to use it:
+
+  # Default: low quality, low size, English subtitles, video ID L7gv9aGB7VY
+  python get_yt-video-by-id.py
+
+  # Custom video ID
+  python get_yt-video-by-id.py dQw4w9WgXcQ
+
+  # High quality, high size
+  python get_yt-video-by-id.py -q high -s high
+
+  # Medium quality, medium size, Spanish subtitles
+  python get_yt-video-by-id.py -q medium -s medium -l es
+
+  # Custom output directory
+  python get_yt-video-by-id.py -o ./my_videos
+
+  # List available formats first
+  python get_yt-video-by-id.py --list-formats
+
+  Resolution mapping:
+  ┌─────────┬────────┬────────────────┐
+  │ Quality │  Size  │ Max Resolution │
+  ├─────────┼────────┼────────────────┤
+  │ low     │ low    │ 360p           │
+  ├─────────┼────────┼────────────────┤
+  │ low     │ medium │ 480p           │
+  ├─────────┼────────┼────────────────┤
+  │ low     │ high   │ 720p           │
+  ├─────────┼────────┼────────────────┤
+  │ medium  │ low    │ 480p           │
+  ├─────────┼────────┼────────────────┤
+  │ medium  │ medium │ 720p           │
+  ├─────────┼────────┼────────────────┤
+  │ medium  │ high   │ 1080p          │
+  ├─────────┼────────┼────────────────┤
+  │ high    │ low    │ 720p           │
+  ├─────────┼────────┼────────────────┤
+  │ high    │ medium │ 1080p          │
+  ├─────────┼────────┼────────────────┤
+  │ high    │ high   │ best available │
+  └─────────┴────────┴────────────────┘
+  The script downloads video + audio merged to MP4, with subtitles (auto-generated if manual unavailable) and thumbnail.
+
+✻ Cogitated for 36s
+
+❯ ULTRATHINK to>                                                            
+  1. run the program with defaults                                          
+  2. if there are bugs, add tests, iteratively revise code until all tests  
+  pass                                                                      
+
+⏺ Bash(source .venv/bin/activate && python get_yt-video-by-id.py   timeout: 5m 
+      2>&1)                                                        0s
+  ⎿  Error: Exit code 1
+     [youtube] Extracting URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     ============================================================
+     YouTube Video Downloader
+     ============================================================
+     Video ID: L7gv9aGB7VY
+     URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     Quality: low
+     Size: low
+     Subtitles: en
+     … +26 lines (ctrl+o to see all)
+
+⏺ The 403 error is from YouTube's bot detection. Let me fix the script with better configuration.
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 28 lines, removed 12 lines                                    
+      15      sys.exit(1)
+      16  
+      17  
+      18 -# Format selectors based on quality and size combinations      
+      19 -FORMAT_SELECTORS = {                                           
+      20 -    # Quality affects video codec preference, Size affects reso
+         -lution                                                         
+      21 -    ('low', 'low'): 'bestvideo[height<=360][ext=mp4]+bestaudio[
+         -ext=m4a]/best[height<=360]',                                   
+      22 -    ('low', 'medium'): 'bestvideo[height<=480][ext=mp4]+bestaud
+         -io[ext=m4a]/best[height<=480]',                                
+      23 -    ('low', 'high'): 'bestvideo[height<=720][ext=mp4]+bestaudio
+         -[ext=m4a]/best[height<=720]',                                  
+      24 -    ('medium', 'low'): 'bestvideo[height<=480][ext=mp4]+bestaud
+         -io[ext=m4a]/best[height<=480]',                                
+      25 -    ('medium', 'medium'): 'bestvideo[height<=720][ext=mp4]+best
+         -audio[ext=m4a]/best[height<=720]',                             
+      26 -    ('medium', 'high'): 'bestvideo[height<=1080][ext=mp4]+besta
+         -udio[ext=m4a]/best[height<=1080]',                             
+      27 -    ('high', 'low'): 'bestvideo[height<=720][ext=mp4]+bestaudio
+         -[ext=m4a]/best[height<=720]',                                  
+      28 -    ('high', 'medium'): 'bestvideo[height<=1080][ext=mp4]+besta
+         -udio[ext=m4a]/best[height<=1080]',                             
+      29 -    ('high', 'high'): 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/be
+         -st',                                                           
+      18 +# Resolution limits based on quality and size combinations     
+      19 +RESOLUTION_LIMITS = {                                          
+      20 +    ('low', 'low'): 360,                                       
+      21 +    ('low', 'medium'): 480,                                    
+      22 +    ('low', 'high'): 720,                                      
+      23 +    ('medium', 'low'): 480,                                    
+      24 +    ('medium', 'medium'): 720,                                 
+      25 +    ('medium', 'high'): 1080,                                  
+      26 +    ('high', 'low'): 720,                                      
+      27 +    ('high', 'medium'): 1080,                                  
+      28 +    ('high', 'high'): None,  # Best available                  
+      29  }
+      30  
+      31  
+      32 +def get_format_selector(quality: str, size: str) -> str:       
+      33 +    """Build format selector string based on quality and size."
+         +""                                                             
+      34 +    max_height = RESOLUTION_LIMITS.get((quality, size), 720)   
+      35 +                                                               
+      36 +    if max_height is None:                                     
+      37 +        # Best available                                       
+      38 +        return 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo
+         ++bestaudio/best'                                               
+      39 +    else:                                                      
+      40 +        # Height-limited with multiple fallbacks               
+      41 +        return (                                               
+      42 +            f'bestvideo[height<={max_height}][ext=mp4]+bestaudi
+         +o[ext=m4a]/'                                                   
+      43 +            f'bestvideo[height<={max_height}]+bestaudio/'      
+      44 +            f'best[height<={max_height}]/'                     
+      45 +            f'best'                                            
+      46 +        )                                                      
+      47 +                                                               
+      48 +                                                               
+      49  def download_video(
+      50      video_id: str,
+      51      quality: str = 'low',
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 18 lines, removed 3 lines                                     
+      70      output_path = Path(output_dir)
+      71      output_path.mkdir(parents=True, exist_ok=True)
+      72  
+      73 -    format_selector = FORMAT_SELECTORS.get((quality, size), FOR
+         -MAT_SELECTORS[('low', 'low')])                                 
+      73 +    format_selector = get_format_selector(quality, size)       
+      74  
+      75      ydl_opts = {
+      76          'format': format_selector,
+     ...
+       87          'writethumbnail': True,
+       88  
+       89          # Network settings
+       90 -        'retries': 3,                                         
+       91 -        'fragment_retries': 5,                                
+       90 +        'retries': 5,                                         
+       91 +        'fragment_retries': 10,                               
+       92          'concurrent_fragment_downloads': 4,
+       93 +        'socket_timeout': 30,                                 
+       94  
+       95 +        # YouTube-specific: use iOS client which has better co
+          +mpatibility                                                   
+       96 +        'extractor_args': {                                   
+       97 +            'youtube': {                                      
+       98 +                'player_client': ['ios', 'web'],              
+       99 +            }                                                 
+      100 +        },                                                    
+      101 +                                                              
+      102 +        # HTTP settings to avoid 403                          
+      103 +        'http_headers': {                                     
+      104 +            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64
+          +; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0
+          + Safari/537.36',                                              
+      105 +            'Accept': 'text/html,application/xhtml+xml,applica
+          +tion/xml;q=0.9,*/*;q=0.8',                                    
+      106 +            'Accept-Language': 'en-us,en;q=0.5',              
+      107 +        },                                                    
+      108 +                                                              
+      109          # Progress
+      110          'progress_hooks': [progress_hook],
+      111          'quiet': False,
+
+⏺ Bash(source .venv/bin/activate && python get_yt-video-by-id.py   timeout: 5m 
+      2>&1)                                                        0s
+  ⎿  Error: Exit code 1
+     [youtube] Extracting URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     ============================================================
+     YouTube Video Downloader
+     ============================================================
+     Video ID: L7gv9aGB7VY
+     URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     Quality: low
+     Size: low
+     Subtitles: en
+     … +24 lines (ctrl+o to see all)
+
+⏺ The issue is YouTube's new anti-bot measures requiring PO tokens. Let me try using the android client which often works better.
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 3 lines, removed 2 lines                                      
+       92          'concurrent_fragment_downloads': 4,
+       93          'socket_timeout': 30,
+       94  
+       95 -        # YouTube-specific: use iOS client which has better co
+          -mpatibility                                                   
+       95 +        # YouTube-specific: use android client which works wit
+          +hout PO tokens                                                
+       96          'extractor_args': {
+       97              'youtube': {
+       98 -                'player_client': ['ios', 'web'],              
+       98 +                'player_client': ['android', 'web'],          
+       99 +                'player_skip': ['webpage', 'configs'],        
+      100              }
+      101          },
+      102  
+
+⏺ Bash(source .venv/bin/activate && pip install curl_cffi 2>&1 | tail -5)
+  ⎿  Installing collected packages: curl_cffi
+     Successfully installed curl_cffi-0.14.0
+     … +3 lines (ctrl+o to expand)
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 4 lines, removed 9 lines                                      
+       92          'concurrent_fragment_downloads': 4,
+       93          'socket_timeout': 30,
+       94  
+       95 -        # YouTube-specific: use android client which works wit
+          -hout PO tokens                                                
+       95 +        # YouTube-specific settings                           
+       96          'extractor_args': {
+       97              'youtube': {
+       98 -                'player_client': ['android', 'web'],          
+       99 -                'player_skip': ['webpage', 'configs'],        
+       98 +                'player_client': ['web', 'android'],          
+       99              }
+      100          },
+      101  
+      103 -        # HTTP settings to avoid 403                          
+      104 -        'http_headers': {                                     
+      105 -            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64
+          -; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0
+          - Safari/537.36',                                              
+      106 -            'Accept': 'text/html,application/xhtml+xml,applica
+          -tion/xml;q=0.9,*/*;q=0.8',                                    
+      107 -            'Accept-Language': 'en-us,en;q=0.5',              
+      108 -        },                                                    
+      102 +        # Use impersonation to bypass 403 errors (requires cur
+          +l_cffi)                                                       
+      103 +        'impersonate': 'chrome',                              
+      104  
+      105          # Progress
+      106          'progress_hooks': [progress_hook],
+
+⏺ Bash(source .venv/bin/activate && python get_yt-video-by-id.py   timeout: 5m 
+      2>&1)                                                        0s
+  ⎿  Error: Exit code 1
+     ============================================================
+     YouTube Video Downloader
+     ============================================================
+     Video ID: L7gv9aGB7VY
+     URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     Quality: low
+     Size: low
+     Subtitles: en
+     Output: ./downloads
+     … +4 lines (ctrl+o to see all)
+
+⏺ Bash(source .venv/bin/activate && yt-dlp --list-impersonate-targets 2>&1)
+  ⎿ WARNING: Your yt-dlp version (2025.09.26) is older than 90 days!     
+             It is strongly recommended to always use the latest version.
+             You installed yt-dlp with pip or using the wheel from PyPi;
+    Us
+    … +11 lines (ctrl+o to expand)
+
+
+
+⏺ Bash(source .venv/bin/activate && pip install -U yt-dlp 2>&1 | tail -5)
+  ⎿  Installing collected packages: yt-dlp  
+     Successfully installed yt-dlp-2025.12.8
+     … +3 lines (ctrl+o to expand)
+
+⏺ Bash(source .venv/bin/activate && yt-dlp --list-impersonate-targets 2>&1)
+  ⎿ WARNING: Your yt-dlp version (2025.09.26) is older than 90 days!     
+             It is strongly recommended to always use the latest version.
+             You installed yt-dlp with pip or using the wheel from PyPi;
+    Us
+    … +11 lines (ctrl+o to expand)
+
+
+
+⏺ Bash(source .venv/bin/activate && which python && python -c "import yt_dlp;
+      print(yt_dlp.version.__version__)" 2>&1)
+  ⎿  python: aliased to python3
+     2025.09.26
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python -m pip install -U yt-dlp
+      curl_cffi 2>&1 | tail -5)
+  ⎿ /Users/jonc/code/utility_yt-dlt_2025/.venv/bin/python: No module name
+    pip
+
+
+⏺ Bash(uv pip install -U yt-dlp curl_cffi 2>&1)
+  ⎿  Resolved 5 packages in 268ms  
+     Downloading yt-dlp (3.1MiB)
+     Downloading curl-cffi (2.9MiB)
+     … +12 lines (ctrl+o to expand)
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python -c "import yt_dlp;
+      print(yt_dlp.version.__version__)" && .venv/bin/yt-dlp
+      --list-impersonate-targets 2>&1)
+  ⎿  2025.12.08                          
+     [info] Available impersonate targets
+     Client    OS   Source
+     … +6 lines (ctrl+o to expand)
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python -c "import curl_cffi;
+      print(curl_cffi.__version__)" 2>&1)
+  ⎿  0.14.0
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python -c "
+      from yt_dlp.networking.impersonate import ImpersonateTarget…)
+  ⎿ CurlCFFI import error: Only curl_cffi versions 0.5.10, 0.10.x, 0.11.x
+    0.12.x, 0.13.x are supported
+
+
+⏺ Bash(uv pip install "curl_cffi>=0.11,<0.14" 2>&1)
+  ⎿  Resolved 4 packages in 21ms  
+     Uninstalled 1 package in 4ms
+     Installed 1 package in 5ms
+     … +2 lines (ctrl+o to expand)
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/yt-dlp --list-impersonate-targets
+      2>&1)
+  ⎿  [info] Available impersonate targets
+     Client        OS           Source
+     ------------------------------------
+     … +31 lines (ctrl+o to expand)
+
+⏺ Now impersonation targets are available. Let me update the script to use a valid target.
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 2 lines, removed 2 lines                                      
+       99              }
+      100          },
+      101  
+      102 -        # Use impersonation to bypass 403 errors (requires cur
+          -l_cffi)                                                       
+      103 -        'impersonate': 'chrome',                              
+      102 +        # Use impersonation to bypass 403 errors (requires cur
+          +l_cffi 0.11-0.13)                                             
+      103 +        'impersonate': 'chrome-131:macos-14',                 
+      104  
+      105          # Progress
+      106          'progress_hooks': [progress_hook],
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python                timeout: 5m 
+      get_yt-video-by-id.py 2>&1)                                   0s
+
+  ⎿  Error: Exit code 1
+     ============================================================
+     YouTube Video Downloader
+     ============================================================
+     Video ID: L7gv9aGB7VY
+     URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     Quality: low
+     Size: low
+     Subtitles: en
+     Output: ./downloads
+     … +4 lines (ctrl+o to see all)
+
+⏺ Read(get_yt-video-by-id.py)
+  ⎿  Read 220 lines
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 1 line                                                        
+       6  
+       7  import argparse
+       8  import sys
+       9 +import traceback                                               
+      10  from pathlib import Path
+      11  
+      12  try:
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 1 line                                                        
+      134          return False
+      135      except Exception as e:
+      136          print(f"\nUnexpected error: {e}")
+      137 +        traceback.print_exc()                                 
+      138          return False
+      139  
+      140  
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python                timeout: 5m 
+      get_yt-video-by-id.py 2>&1)                                   0s
+
+  ⎿  Error: Exit code 1
+     Traceback (most recent call last):
+       File "/Users/jonc/code/utility_yt-dlt_2025/get_yt-video-by-id.py", line 
+     125, in download_video
+         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+       File "/Users/jonc/code/utility_yt-dlt_2025/.venv/lib/python3.12/site-packa
+     ges/yt_dlp/YoutubeDL.py", line 763, in __init__
+         if not self._impersonate_target_available(impersonate_target):
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       File "/Users/jonc/code/utility_yt-dlt_2025/.venv/lib/python3.12/site-packa
+     ges/yt_dlp/YoutubeDL.py", line 4201, in _impersonate_target_available
+         return any(
+     … +20 lines (ctrl+o to see all)
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python -c "
+      from yt_dlp.networking.impersonate import ImpersonateTarget…)
+  ⎿  chrome-131:macos-14                                      
+     <class 'yt_dlp.networking.impersonate.ImpersonateTarget'>
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 1 line                                                        
+      11  
+      12  try:
+      13      import yt_dlp
+      14 +    from yt_dlp.networking.impersonate import ImpersonateTarget
+      15  except ImportError:
+      16      print("Error: yt-dlp not installed. Run: pip install yt-dlp
+          ")
+      17      sys.exit(1)
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 1 line, removed 1 line                                        
+      102          },
+      103  
+      104          # Use impersonation to bypass 403 errors (requires cur
+           l_cffi 0.11-0.13)
+      105 -        'impersonate': 'chrome-131:macos-14',                 
+      105 +        'impersonate': ImpersonateTarget.from_str('chrome-131:
+          +macos-14'),                                                   
+      106  
+      107          # Progress
+      108          'progress_hooks': [progress_hook],
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python                timeout: 5m 
+      get_yt-video-by-id.py 2>&1)                                   0s
+
+  ⎿  Error: Exit code 1
+     [youtube] Extracting URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     ============================================================
+     YouTube Video Downloader
+     ============================================================
+     Video ID: L7gv9aGB7VY
+     URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     Quality: low
+     Size: low
+     Subtitles: en
+     … +13 lines (ctrl+o to see all)
+
+⏺ The video formats are being blocked due to YouTube's anti-bot measures. Let me try a different approach using the tv_embedded client which sometimes works without PO tokens.
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 5 lines, removed 2 lines                                      
+       94          'concurrent_fragment_downloads': 4,
+       95          'socket_timeout': 30,
+       96  
+       97 -        # YouTube-specific settings                           
+       97 +        # YouTube-specific settings - use tv_embedded which of
+          +ten works without PO tokens                                   
+       98          'extractor_args': {
+       99              'youtube': {
+      100 -                'player_client': ['web', 'android'],          
+      100 +                'player_client': ['tv_embedded', 'mweb'],     
+      101              }
+      102          },
+      103  
+      104          # Use impersonation to bypass 403 errors (requires cur
+           l_cffi 0.11-0.13)
+      105          'impersonate': ImpersonateTarget.from_str('chrome-131:
+           macos-14'),
+      106  
+      107 +        # Don't fail on unavailable formats                   
+      108 +        'ignore_no_formats_error': False,                     
+      109 +                                                              
+      110          # Progress
+      111          'progress_hooks': [progress_hook],
+      112          'quiet': False,
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 6 lines, removed 3 lines                                      
+      36      max_height = RESOLUTION_LIMITS.get((quality, size), 720)
+      37  
+      38      if max_height is None:
+      39 -        # Best available                                       
+      40 -        return 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo
+         -+bestaudio/best'                                               
+      39 +        # Best available - with extensive fallbacks            
+      40 +        return 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo
+         ++bestaudio/best[ext=mp4]/best'                                 
+      41      else:
+      42 -        # Height-limited with multiple fallbacks               
+      42 +        # Height-limited with multiple fallbacks for YouTube's 
+         +format restrictions                                            
+      43          return (
+      44              f'bestvideo[height<={max_height}][ext=mp4]+bestaudi
+          o[ext=m4a]/'
+      45              f'bestvideo[height<={max_height}]+bestaudio/'
+      46 +            f'best[height<={max_height}][ext=mp4]/'            
+      47              f'best[height<={max_height}]/'
+      48 +            f'bestvideo+bestaudio/'                            
+      49 +            f'best[ext=mp4]/'                                  
+      50              f'best'
+      51          )
+      52  
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python                timeout: 5m 
+      get_yt-video-by-id.py 2>&1)                                   0s
+
+  ⎿  Error: Exit code 1
+     [youtube] Extracting URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     ============================================================
+     YouTube Video Downloader
+     ============================================================
+     Video ID: L7gv9aGB7VY
+     URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     Quality: low
+     Size: low
+     Subtitles: en
+     … +12 lines (ctrl+o to see all)
+
+⏺ YouTube is requiring authentication. Let me add cookies support and try a simpler client configuration.
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 4 lines, removed 4 lines                                      
+       97          'concurrent_fragment_downloads': 4,
+       98          'socket_timeout': 30,
+       99  
+      100 -        # YouTube-specific settings - use tv_embedded which of
+          -ten works without PO tokens                                   
+      100 +        # YouTube-specific settings                           
+      101          'extractor_args': {
+      102              'youtube': {
+      103 -                'player_client': ['tv_embedded', 'mweb'],     
+      103 +                'player_client': ['web'],                     
+      104              }
+      105          },
+      106  
+      107          # Use impersonation to bypass 403 errors (requires cur
+           l_cffi 0.11-0.13)
+      108          'impersonate': ImpersonateTarget.from_str('chrome-131:
+           macos-14'),
+      109  
+      110 -        # Don't fail on unavailable formats                   
+      111 -        'ignore_no_formats_error': False,                     
+      110 +        # Use cookies from Chrome browser if available (for ag
+          +e-restricted content)                                         
+      111 +        'cookiesfrombrowser': ('chrome',),                    
+      112  
+      113          # Progress
+      114          'progress_hooks': [progress_hook],
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python                timeout: 5m 
+      get_yt-video-by-id.py 2>&1)                                   0s
+
+  ⎿  Error: Exit code 1
+     Extracting cookies from chrome
+     ============================================================
+     YouTube Video Downloader
+     ============================================================
+     Video ID: L7gv9aGB7VY
+     URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     Quality: low
+     Size: low
+     Subtitles: en
+     … +13 lines (ctrl+o to see all)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ before continuing, please search the web for the most current (today is   
+  Jan 15, 2026) information on bugs, issues, workarounds, alternative       
+  methods, etc. to overcome YouTube bot and scraping blocks                 
+
+⏺ Web Search("yt-dlp YouTube 403 forbidden SABR streaming PO token workaround
+            2025 2026")
+  ⎿  Did 1 search in 26s                                                 
+
+
+⏺ Web Search("YouTube bot detection bypass yt-dlp January 2026 fix")
+  ⎿  Did 1 search in 23s                                                 
+
+
+⏺ Web Search("yt-dlp GitHub issues YouTube download not working 2026")
+  ⎿  Did 1 search in 18s                                                 
+
+
+⏺ Web Search("yt-dlp Deno JavaScript runtime YouTube fix install 2025")
+  ⎿  Did 1 search in 23s                                                 
+
+
+⏺ Web Search("yt-dlp web_embedded player_client YouTube workaround")
+  ⎿  Did 1 search in 17s                                                 
+
+
+⏺ Summary: YouTube Bot/Scraping Blocks & Workarounds (January 2026)
+
+  Based on my research, here are the key findings:
+
+  The Core Problem
+
+  YouTube has been aggressively blocking downloaders through:
+  1. SABR Streaming - YouTube now forces Server-Side Ad Placement (SABR) streaming for certain clients, removing direct playback URLs
+  2. PO Token Requirements - Many clients now require Proof of Origin tokens
+  3. JavaScript Challenges - More complex JS challenges that require external runtimes
+
+  Critical Fix: Install Deno JavaScript Runtime
+
+  As of yt-dlp version 2025.11.12, an external JavaScript runtime is required for full YouTube support. Without it, formats are limited and downloads may fail.
+
+  # Install Deno (macOS/Linux)
+  curl -fsSL https://deno.land/install.sh | sh
+
+  # Or on macOS with Homebrew
+  brew install deno
+
+  # Then update yt-dlp
+  pip install -U yt-dlp
+
+  Best Workarounds (in order of effectiveness)
+
+  1. Use web_embedded player client - Doesn't require PO tokens or cookies:
+  yt-dlp --extractor-args "youtube:player_client=web_embedded" <URL>
+  1. ⚠️ Won't work for age-restricted or membership content
+  2. Install Deno + update yt-dlp - The official recommended fix
+  3. Use cookies from browser (for restricted content):
+  yt-dlp --cookies-from-browser chrome <URL>
+  4. Add sleep intervals to avoid rate limiting:
+  yt-dlp --sleep-requests 4 --sleep-interval 4 <URL>
+
+  Sources
+
+  - https://github.com/yt-dlp/yt-dlp/issues/15012
+  - https://github.com/yt-dlp/yt-dlp/issues/12561
+  - https://github.com/yt-dlp/yt-dlp/issues/12482
+  - https://github.com/yt-dlp/yt-dlp/issues/14680
+  - https://github.com/yt-dlp/yt-dlp/wiki/EJS
+  - https://gigazine.net/gsc_news/en/20251113-yt-dlp-required-deno-javascript-runtime/
+
+  ---
+  Would you like me to:
+  1. Install Deno and update the script to use web_embedded client?
+  2. Continue with a different approach?
+
+✻ Worked for 1m 11s
+
+❯ 1 
+
+⏺ Bash(which deno || brew install deno 2>&1)
+  ⎿ deno not found                                                       
+    ==> Auto-updating Homebrew...
+    Adjust how often this is run with `$HOMEBREW_AUTO_UPDATE_SECS` or
+    disab
+    … +92 lines (ctrl+o to expand)
+
+⏺ Bash(deno --version)
+  ⎿  deno 2.6.4 (stable, release, aarch64-apple-darwin)
+     v8 14.2.231.17-rusty
+     typescript 5.9.2
+
+⏺ Read(get_yt-video-by-id.py)
+  ⎿  Read 229 lines
+
+⏺ Write(get_yt-video-by-id.py)
+  ⎿  Added 77 lines, removed 26 lines                                    
+       2  """
+       3  YouTube Video Downloader by ID
+       4  Downloads YouTube videos with configurable quality, size, and s
+          ubtitle language.
+       5 +                                                               
+       6 +Requirements:                                                  
+       7 +- yt-dlp (pip install yt-dlp)                                  
+       8 +- Deno JavaScript runtime (brew install deno) - required for Yo
+         +uTube JS challenges                                            
+       9 +- curl_cffi 0.11-0.13 (pip install "curl_cffi>=0.11,<0.14") - f
+         +or impersonation                                               
+      10  """
+      11  
+      12  import argparse
+     ...
+      16  
+      17  try:
+      18      import yt_dlp
+      14 -    from yt_dlp.networking.impersonate import ImpersonateTarget
+      19  except ImportError:
+      20      print("Error: yt-dlp not installed. Run: pip install yt-dlp
+          ")
+      21      sys.exit(1)
+      22  
+      23 +# Check for ImpersonateTarget (optional, for curl_cffi support)
+      24 +try:                                                           
+      25 +    from yt_dlp.networking.impersonate import ImpersonateTarget
+      26 +    HAS_IMPERSONATE = True                                     
+      27 +except ImportError:                                            
+      28 +    HAS_IMPERSONATE = False                                    
+      29  
+      30 +                                                               
+      31  # Resolution limits based on quality and size combinations
+      32  RESOLUTION_LIMITS = {
+      33      ('low', 'low'): 360,
+     ...
+      67      quality: str = 'low',
+      68      size: str = 'low',
+      69      language: str = 'en',
+      59 -    output_dir: str = './downloads'                            
+      70 +    output_dir: str = './downloads',                           
+      71 +    use_cookies: bool = False                                  
+      72  ) -> bool:
+      73      """
+      74      Download a YouTube video by ID.
+     ...
+      79          size: Video size/resolution ('low', 'medium', 'high')
+      80          language: Subtitle language code (default: 'en')
+      81          output_dir: Output directory for downloads
+      82 +        use_cookies: Whether to use browser cookies (for age-re
+         +stricted content)                                              
+      83  
+      84      Returns:
+      85          True if download succeeded, False otherwise
+     ...
+      110          'concurrent_fragment_downloads': 4,
+      111          'socket_timeout': 30,
+      112  
+      100 -        # YouTube-specific settings                           
+      113 +        # YouTube-specific: use web_embedded which doesn't req
+          +uire PO tokens                                                
+      114 +        # This is the recommended workaround for 403 errors (J
+          +an 2026)                                                      
+      115 +        # Note: won't work for age-restricted or membership co
+          +ntent                                                         
+      116          'extractor_args': {
+      117              'youtube': {
+      103 -                'player_client': ['web'],                     
+      118 +                'player_client': ['web_embedded', 'web'],     
+      119              }
+      120          },
+      121  
+      107 -        # Use impersonation to bypass 403 errors (requires cur
+          -l_cffi 0.11-0.13)                                             
+      108 -        'impersonate': ImpersonateTarget.from_str('chrome-131:
+          -macos-14'),                                                   
+      109 -                                                              
+      110 -        # Use cookies from Chrome browser if available (for ag
+          -e-restricted content)                                         
+      111 -        'cookiesfrombrowser': ('chrome',),                    
+      112 -                                                              
+      122          # Progress
+      123          'progress_hooks': [progress_hook],
+      124          'quiet': False,
+      125          'no_warnings': False,
+      126      }
+      127  
+      128 +    # Add impersonation if curl_cffi is available             
+      129 +    if HAS_IMPERSONATE:                                       
+      130 +        try:                                                  
+      131 +            ydl_opts['impersonate'] = ImpersonateTarget.from_s
+          +tr('chrome-131:macos-14')                                     
+      132 +        except Exception:                                     
+      133 +            pass  # Skip if impersonation target not available
+      134 +                                                              
+      135 +    # Add cookies for age-restricted content                  
+      136 +    if use_cookies:                                           
+      137 +        ydl_opts['cookiesfrombrowser'] = ('chrome',)          
+      138 +                                                              
+      139      print(f"{'='*60}")
+      120 -    print(f"YouTube Video Downloader")                        
+      140 +    print("YouTube Video Downloader")                         
+      141      print(f"{'='*60}")
+      142      print(f"Video ID: {video_id}")
+      143      print(f"URL: {url}")
+     ...
+      146      print(f"Subtitles: {language}")
+      147      print(f"Output: {output_dir}")
+      148      print(f"Format: {format_selector}")
+      149 +    print(f"Impersonation: {'enabled' if HAS_IMPERSONATE else 
+          +'disabled'}")                                                 
+      150 +    print(f"Cookies: {'enabled' if use_cookies else 'disabled'
+          +}")                                                           
+      151      print(f"{'='*60}")
+      152  
+      153      try:
+     ...
+      178          print(f"\nFinished downloading: {d.get('filename', 'Un
+           known')}")
+      179  
+      180  
+      181 +def list_formats(video_id: str):                              
+      182 +    """List available formats for a video."""                 
+      183 +    url = f'https://www.youtube.com/watch?v={video_id}'       
+      184 +    print(f"Listing formats for: {url}\n")                    
+      185 +                                                              
+      186 +    ydl_opts = {                                              
+      187 +        'quiet': True,                                        
+      188 +        'extractor_args': {                                   
+      189 +            'youtube': {                                      
+      190 +                'player_client': ['web_embedded', 'web'],     
+      191 +            }                                                 
+      192 +        },                                                    
+      193 +    }                                                         
+      194 +                                                              
+      195 +    try:                                                      
+      196 +        with yt_dlp.YoutubeDL(ydl_opts) as ydl:               
+      197 +            info = ydl.extract_info(url, download=False)      
+      198 +            formats = info.get('formats', [])                 
+      199 +                                                              
+      200 +            if not formats:                                   
+      201 +                print("No formats available.")                
+      202 +                return                                        
+      203 +                                                              
+      204 +            print(f"{'ID':<15} {'EXT':<6} {'RESOLUTION':<12} {
+          +'VCODEC':<15} {'ACODEC':<15}")                                
+      205 +            print("-" * 70)                                   
+      206 +            for f in formats:                                 
+      207 +                fid = f.get('format_id', 'N/A')               
+      208 +                ext = f.get('ext', 'N/A')                     
+      209 +                res = f"{f.get('width', '?')}x{f.get('height',
+          + '?')}" if f.get('height') else 'audio only'                  
+      210 +                vcodec = (f.get('vcodec') or 'none')[:14]     
+      211 +                acodec = (f.get('acodec') or 'none')[:14]     
+      212 +                print(f"{fid:<15} {ext:<6} {res:<12} {vcodec:<
+          +15} {acodec:<15}")                                            
+      213 +    except Exception as e:                                    
+      214 +        print(f"Error listing formats: {e}")                  
+      215 +                                                              
+      216 +                                                              
+      217  def main():
+      218      parser = argparse.ArgumentParser(
+      219          description='Download YouTube videos by ID with config
+           urable quality and size'
+     ...
+      251          action='store_true',
+      252          help='List available formats without downloading'
+      253      )
+      254 +    parser.add_argument(                                      
+      255 +        '--cookies',                                          
+      256 +        action='store_true',                                  
+      257 +        help='Use Chrome browser cookies (for age-restricted c
+          +ontent)'                                                      
+      258 +    )                                                         
+      259  
+      260      args = parser.parse_args()
+      261  
+      262      if args.list_formats:
+      200 -        url = f'https://www.youtube.com/watch?v={args.video_id
+          -}'                                                            
+      201 -        print(f"Listing formats for: {url}\n")                
+      202 -        with yt_dlp.YoutubeDL({'quiet': True}) as ydl:        
+      203 -            info = ydl.extract_info(url, download=False)      
+      204 -            formats = info.get('formats', [])                 
+      205 -            print(f"{'ID':<15} {'EXT':<6} {'RESOLUTION':<12} {
+          -'VCODEC':<15} {'ACODEC':<15}")                                
+      206 -            print("-" * 70)                                   
+      207 -            for f in formats:                                 
+      208 -                fid = f.get('format_id', 'N/A')               
+      209 -                ext = f.get('ext', 'N/A')                     
+      210 -                res = f"{f.get('width', '?')}x{f.get('height',
+          - '?')}" if f.get('height') else 'audio only'                  
+      211 -                vcodec = f.get('vcodec', 'none')[:14]         
+      212 -                acodec = f.get('acodec', 'none')[:14]         
+      213 -                print(f"{fid:<15} {ext:<6} {res:<12} {vcodec:<
+          -15} {acodec:<15}")                                            
+      263 +        list_formats(args.video_id)                           
+      264          return
+      265  
+      266      success = download_video(
+     ...
+      268          quality=args.quality,
+      269          size=args.size,
+      270          language=args.language,
+      221 -        output_dir=args.output_dir                            
+      271 +        output_dir=args.output_dir,                           
+      272 +        use_cookies=args.cookies                              
+      273      )
+      274  
+      275      sys.exit(0 if success else 1)
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python                timeout: 5m 
+      get_yt-video-by-id.py 2>&1)                                   0s
+
+  ⎿  Error: Exit code 1
+     [youtube] Extracting URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     ============================================================
+     YouTube Video Downloader
+     ============================================================
+     Video ID: L7gv9aGB7VY
+     URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     Quality: low
+     Size: low
+     Subtitles: en
+     … +17 lines (ctrl+o to see all)
+
+⏺ The warning says we need to enable remote components for JS challenges. Let me update the script to include this option.
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 3 lines                                                       
+      119              }
+      120          },
+      121  
+      122 +        # Enable remote components for JS challenge solver (re
+          +quired as of Nov 2025)                                        
+      123 +        'remote_components': {'ejs': 'github'},               
+      124 +                                                              
+      125          # Progress
+      126          'progress_hooks': [progress_hook],
+      127          'quiet': False,
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 1 line                                                        
+      193                  'player_client': ['web_embedded', 'web'],
+      194              }
+      195          },
+      196 +        'remote_components': {'ejs': 'github'},               
+      197      }
+      198  
+      199      try:
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python                timeout: 5m 
+      get_yt-video-by-id.py 2>&1)                                   0s
+
+  ⎿  Error: Exit code 1
+     WARNING: Ignoring unsupported remote component(s): ejs. Supported remote 
+     components: ejs:github, ejs:npm.
+     [youtube] Extracting URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     ============================================================
+     YouTube Video Downloader
+     ============================================================
+     Video ID: L7gv9aGB7VY
+     URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+     Quality: low
+     Size: low
+     … +18 lines (ctrl+o to see all)
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python -c "
+      import yt_dlp…)
+  ⎿  No matches found
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/yt-dlp --help 2>&1 | grep -A 2 -i
+      "remote-component")
+  ⎿     --remote-components COMPONENT   Remote components to allow yt-dlp
+    t
+    o fetch
+                                        when required. This option is
+    curre
+    … +11 lines (ctrl+o to expand)
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 1 line, removed 1 line                                        
+      120          },
+      121  
+      122          # Enable remote components for JS challenge solver (re
+           quired as of Nov 2025)
+      123 -        'remote_components': {'ejs': 'github'},               
+      123 +        'remote_components': ['ejs:github'],                  
+      124  
+      125          # Progress
+      126          'progress_hooks': [progress_hook],
+
+⏺ Update(get_yt-video-by-id.py)
+  ⎿  Added 1 line, removed 1 line                                        
+      193                  'player_client': ['web_embedded', 'web'],
+      194              }
+      195          },
+      196 -        'remote_components': {'ejs': 'github'},               
+      196 +        'remote_components': ['ejs:github'],                  
+      197      }
+      198  
+      199      try:
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python                timeout: 5m 
+      get_yt-video-by-id.py 2>&1)                                   0s
+
+  ⎿ [youtube] Extracting URL: https://www.youtube.com/watch?v=L7gv9aGB7VY
+    ============================================================
+    YouTube Video Downloader
+    … +99 lines (ctrl+o to expand)
+
+
+⏺ The download succeeded. Let me verify the downloaded files and then add tests.
+
+⏺ Bash(ls -la downloads/ 2>&1 | head -20)
+  ⎿  total 10827304                                        
+     drwxr-xr-x@ 12 jonc  staff         384 Jan 15 11:17 .
+     drwxr-xr-x@ 27 jonc  staff         864 Jan 15 11:17 ..
+     … +19 lines (ctrl+o to expand)
+
+⏺ Excellent! The download worked perfectly:
+  - Video: The Godfather, Part II - ＂They Could Win＂.mp4 (2.1 MB)
+  - Subtitles: .en.vtt (5.3 KB)
+  - Thumbnail: .webp (46 KB)
+
+⏺ Now let me add tests.
+
+⏺ Write(test_get_yt_video.py)
+  ⎿  Wrote 248 lines to test_get_yt_video.py
+      1 #!/usr/bin/env python3
+      2 """
+      3 Tests for get_yt-video-by-id.py
+      4 """
+      5 import pytest
+      6 import sys
+      7 import tempfile
+      8 import os
+      9 from pathlib import Path
+     … +238 lines (ctrl+o to expand)
+
+⏺ Bash(source .venv/bin/activate && uv pip install pytest 2>&1 |   timeout: 1m 
+      tail -3)                                                     0s
+  ⎿   + pluggy==1.6.0   
+      + pygments==2.19.2
+      + pytest==9.0.2
+
+⏺ Bash(source .venv/bin/activate && .venv/bin/python -m pytest
+      test_get_yt_video.py -v --ignore-glob='*integration*' 2>&1)
+  ⎿ ============================= test session starts                    
+    =====================
+    =========
+    platform darwin -- Python 3.12.11, pytest-9.0.2, pluggy-1.6.0 --
+    /Users
+    … +65 lines (ctrl+o to expand)
+
+⏺ All 23 tests passed.
+
+⏺ Summary
+
+  Successfully created and tested get_yt-video-by-id.py:
+
+  What was done:
+
+  1. Installed Deno (v2.6.4) - Required for YouTube's JavaScript challenges as of Nov 2025
+  2. Fixed YouTube bot/scraping blocks using:
+    - web_embedded player client (doesn't require PO tokens)
+    - Remote EJS components (ejs:github) for JS challenge solving
+    - Impersonation via curl_cffi (Chrome 131)
+  3. Created the downloader with:
+    - Quality settings: low, medium, high
+    - Size settings: low, medium, high (maps to 360p-1080p)
+    - Subtitle language support (default: en)
+    - Automatic thumbnail download
+  4. Added 23 tests - All passing
+
+  Usage:
+
+  # Default (low quality, low size, English subtitles)
+  python get_yt-video-by-id.py
+
+  # Custom options
+  python get_yt-video-by-id.py VIDEO_ID -q medium -s high -l es
+
+  # For age-restricted content, add --cookies
+  python get_yt-video-by-id.py VIDEO_ID --cookies
+
+  # List formats
+  python get_yt-video-by-id.py VIDEO_ID --list-formats
+
+  Resolution mapping:
+  ┌─────────┬────────┬────────────────┐
+  │ Quality │  Size  │ Max Resolution │
+  ├─────────┼────────┼────────────────┤
+  │ low     │ low    │ 360p           │
+  ├─────────┼────────┼────────────────┤
+  │ low     │ medium │ 480p           │
+  ├─────────┼────────┼────────────────┤
+  │ low     │ high   │ 720p           │
+  ├─────────┼────────┼────────────────┤
+  │ medium  │ low    │ 480p           │
+  ├─────────┼────────┼────────────────┤
+  │ medium  │ medium │ 720p           │
+  ├─────────┼────────┼────────────────┤
+  │ medium  │ high   │ 1080p          │
+  ├─────────┼────────┼────────────────┤
+  │ high    │ low    │ 720p           │
+  ├─────────┼────────┼────────────────┤
+  │ high    │ medium │ 1080p          │
+  ├─────────┼────────┼────────────────┤
+  │ high    │ high   │ best available │
+  └─────────┴────────┴────────────────┘
+
+✻ Brewed for 3m 35s
+
+❯ THINK HARD to create a professional README.md with a professional         
+  complete overview with detailed instructions on installation,             
+  configuration, etc. then push to github with appropriate comment          
+
+⏺ Read(README.md)
+  ⎿  Read 363 lines
+
+⏺ Bash(ls -la *.py 2>/dev/null | grep -v __pycache__)
+  ⎿ -rw-r--r--@ 1 jonc  staff  40741 Oct  6 17:56                        
+    get_ibm_yt-dlt_claude45_2
+    0251006.py
+    -rw-r--r--@ 1 jonc  staff  42493 Oct  6 17:26
+    get_ibm_yt-dlt_gpt5_worki
+    … +8 lines (ctrl+o to expand)
+
+⏺ Write(README.md)
+  ⎿  Added 357 lines, removed 237 lines                                  
+        1 -# IBM Video Downloader with yt-dlp                            
+        1 +# Video Downloader Toolkit                                    
+        2  
+        3 -A robust Python utility for downloading videos from IBM Video 
+          -(video.ibm.com) and other platforms using yt-dlp, with advance
+          -d features for AI research workflows, comprehensive logging, a
+          -nd intelligent format detection.                              
+        3 +A comprehensive Python toolkit for downloading videos from You
+          +Tube, IBM Video, and other platforms using yt-dlp. Features in
+          +telligent format detection, anti-bot bypass techniques, and op
+          +timized configurations for AI research workflows.             
+        4  
+        5 -[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.
+          -svg)](https://www.python.org/downloads/)                      
+        5 +[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blu
+          +e.svg)](https://www.python.org/downloads/)                    
+        6  [![License: MIT](https://img.shields.io/badge/License-MIT-yell
+           ow.svg)](https://opensource.org/licenses/MIT)
+        7 -[![yt-dlp](https://img.shields.io/badge/yt--dlp-latest-green.s
+          -vg)](https://github.com/yt-dlp/yt-dlp)                        
+        7 +[![yt-dlp](https://img.shields.io/badge/yt--dlp-2025.12+-green
+          +.svg)](https://github.com/yt-dlp/yt-dlp)                      
+        8  
+        9 -## 🎯 **Verified Working Solution** ✅                        
+        9 +---                                                           
+       10  
+       11 -**Status: FULLY FUNCTIONAL** - Successfully downloads IBM Vide
+          -o HLS streams!                                                
+       11 +## Table of Contents                                          
+       12  
+       13 -**Latest Test Results:**                                      
+       14 -- ✅ **IBM Video URL**: `https://video.ibm.com/recorded/134516
+          -112`                                                          
+       15 -- ✅ **Formats Detected**: 7 HLS formats (252p to 1080p)      
+       16 -- ✅ **Download Success**: 1.74GB video in 5:32 minutes at 4.9
+          -8MiB/s                                                        
+       17 -- ✅ **Quality**: 1080p (hls-2625) automatically selected     
+       18 -- ✅ **Files Created**: Video + thumbnail + comprehensive logs
+       13 +- [Features](#features)                                       
+       14 +- [Prerequisites](#prerequisites)                             
+       15 +- [Installation](#installation)                               
+       16 +- [Quick Start](#quick-start)                                 
+       17 +- [YouTube Downloader](#youtube-downloader-get_yt-video-by-idp
+          +y)                                                            
+       18 +- [IBM Video Downloader](#ibm-video-downloader)               
+       19 +- [Configuration](#configuration)                             
+       20 +- [Troubleshooting](#troubleshooting)                         
+       21 +- [Testing](#testing)                                         
+       22 +- [Project Structure](#project-structure)                     
+       23 +- [Contributing](#contributing)                               
+       24 +- [License](#license)                                         
+       25  
+       20 -### Quick Success Test:                                       
+       21 -```bash                                                       
+       22 -# This WILL work now:                                         
+       23 -python get_ibm_yt-dlt.py --debug-level max                    
+       24 -```                                                           
+       26 +---                                                           
+       27  
+       26 -## ✨ Features                                                
+       28 +## Features                                                   
+       29  
+       28 -- **🎯 Smart Format Detection**: Automatically detects availab
+          -le formats and selects optimal quality                        
+       29 -- **📊 Comprehensive Logging**: Detailed logs with progress tr
+          -acking and error handling                                     
+       30 -- **🔧 Highly Configurable**: Extensive configuration options 
+          -for quality, format, and processing                           
+       31 -- **🤖 AI Research Ready**: Built for multimodal AI research w
+          -ith structured outputs and batch processing                   
+       32 -- **📱 Multiple Platforms**: Works with IBM Video, YouTube, an
+          -d other yt-dlp supported sites                                
+       33 -- **🔄 Resume Support**: Automatic retry logic and resumable d
+          -ownloads                                                      
+       34 -- **📁 Organized Output**: Structured file organization with m
+          -etadata extraction                                            
+       35 -- **⚡ Parallel Downloads**: Concurrent fragment downloads for
+          - faster speeds                                                
+       30 +- **YouTube Downloads** with anti-bot bypass (January 2026 com
+          +patible)                                                      
+       31 +- **IBM Video/HLS Stream Support** with automatic format detec
+          +tion                                                          
+       32 +- **Configurable Quality/Size** presets (low/medium/high)     
+       33 +- **Automatic Subtitle Download** with language selection     
+       34 +- **Thumbnail Extraction** for video previews                 
+       35 +- **Browser Impersonation** via curl_cffi to avoid 403 errors 
+       36 +- **JavaScript Challenge Solving** via Deno runtime           
+       37 +- **Comprehensive Logging** with debug levels                 
+       38 +- **AI Research Ready** with batch processing support         
+       39  
+       37 -## 🚀 Quick Start                                             
+       40 +---                                                           
+       41  
+       39 -### Installation                                              
+       42 +## Prerequisites                                              
+       43  
+       44 +### Required                                                  
+       45 +                                                              
+       46 +| Component | Version | Purpose |                             
+       47 +|-----------|---------|---------|                             
+       48 +| Python | 3.10+ | Runtime environment |                      
+       49 +| yt-dlp | 2025.11+ | Core download engine |                  
+       50 +| Deno | 2.0+ | YouTube JS challenge solving |                
+       51 +| FFmpeg | 4.0+ | Video merging and conversion |              
+       52 +                                                              
+       53 +### Optional (Recommended)                                    
+       54 +                                                              
+       55 +| Component | Version | Purpose |                             
+       56 +|-----------|---------|---------|                             
+       57 +| curl_cffi | 0.11-0.13 | Browser impersonation for 403 bypass
+          + |                                                            
+       58 +                                                              
+       59 +---                                                           
+       60 +                                                              
+       61 +## Installation                                               
+       62 +                                                              
+       63 +### 1. Clone the Repository                                   
+       64 +                                                              
+       65  ```bash
+       42 -# Clone the repository                                        
+       66  git clone https://github.com/jon-chun/utility_yt-dlt_2025.git
+       67  cd utility_yt-dlt_2025
+       68 +```                                                           
+       69  
+       46 -# Create virtual environment (recommended)                    
+       70 +### 2. Create Virtual Environment                             
+       71 +                                                              
+       72 +Using [uv](https://github.com/astral-sh/uv) (recommended):    
+       73 +```bash                                                       
+       74  uv venv --python=3.12
+       48 -source .venv/bin/activate  # On Windows: .venv\Scripts\activat
+          -e                                                             
+       75 +source .venv/bin/activate  # Linux/macOS                      
+       76 +# .venv\Scripts\activate   # Windows                          
+       77 +```                                                           
+       78  
+       50 -# Install dependencies                                        
+       51 -uv add -r requirements.txt                                    
+       52 -# OR with pip: pip install -r requirements.txt                
+       79 +Or using standard venv:                                       
+       80 +```bash                                                       
+       81 +python -m venv .venv                                          
+       82 +source .venv/bin/activate                                     
+       83  ```
+       84  
+       55 -### Basic Usage                                               
+       85 +### 3. Install Python Dependencies                            
+       86  
+       87  ```bash
+       58 -# Download the default IBM video                              
+       59 -python get_ibm_yt-dlt.py                                      
+       88 +# Using uv (faster)                                           
+       89 +uv pip install -r requirements.txt                            
+       90 +uv pip install "curl_cffi>=0.11,<0.14"  # For impersonation   
+       91  
+       61 -# Download with custom URL                                    
+       62 -python get_ibm_yt-dlt.py https://video.ibm.com/recorded/YOUR_V
+          -IDEO_ID                                                       
+       92 +# Or using pip                                                
+       93 +pip install -r requirements.txt                               
+       94 +pip install "curl_cffi>=0.11,<0.14"                           
+       95 +```                                                           
+       96  
+       64 -# List available formats first (recommended)                  
+       65 -python get_ibm_yt-dlt.py --list-formats                       
+       97 +### 4. Install Deno (Required for YouTube)                    
+       98  
+       67 -# Download with specific quality                              
+       68 -python get_ibm_yt-dlt.py -q 720p -f mp4 -o ./my_downloads     
+       99 +**macOS:**                                                    
+      100 +```bash                                                       
+      101 +brew install deno                                             
+      102 +```                                                           
+      103  
+       70 -# Get video information only                                  
+       71 -python get_ibm_yt-dlt.py --info-only                          
+      104 +**Linux:**                                                    
+      105 +```bash                                                       
+      106 +curl -fsSL https://deno.land/install.sh | sh                  
+      107 +```                                                           
+      108  
+       73 -# Enable verbose logging                                      
+       74 -python get_ibm_yt-dlt.py -v                                   
+      109 +**Windows:**                                                  
+      110 +```powershell                                                 
+      111 +winget install --id=DenoLand.Deno                             
+      112  ```
+      113  
+       77 -## 📋 Command Line Options                                    
+      114 +### 5. Install FFmpeg                                         
+      115  
+       79 -| Option | Short | Description | Default |                    
+       80 -|--------|-------|-------------|---------|                    
+       81 -| `--output-dir` | `-o` | Output directory for downloads | `./
+          -downloads` |                                                  
+       82 -| `--quality` | `-q` | Video quality (`480p`, `720p`, `1080p`,
+          - `best`) | `best` |                                           
+       83 -| `--format` | `-f` | Output format (`mp4`, `webm`, `mkv`) | `
+          -mp4` |                                                        
+       84 -| `--info-only` | | Extract video info without downloading | `
+          -False` |                                                      
+       85 -| `--list-formats` | | List all available formats | `False` | 
+       86 -| `--verbose` | `-v` | Enable verbose logging | `False` |     
+      116 +**macOS:**                                                    
+      117 +```bash                                                       
+      118 +brew install ffmpeg                                           
+      119 +```                                                           
+      120  
+       88 -## 🔧 Configuration                                           
+      121 +**Linux (Ubuntu/Debian):**                                    
+      122 +```bash                                                       
+      123 +sudo apt update && sudo apt install ffmpeg                    
+      124 +```                                                           
+      125  
+       90 -### Default Configuration                                     
+      126 +**Windows:**                                                  
+      127 +```powershell                                                 
+      128 +winget install --id=Gyan.FFmpeg                               
+      129 +```                                                           
+      130  
+       92 -The script uses intelligent defaults that work for most scenar
+          -ios:                                                          
+      131 +### 6. Verify Installation                                    
+      132  
+       94 -```python                                                     
+       95 -{                                                             
+       96 -    "output_dir": "./downloads",                              
+       97 -    "output_template": "%(uploader)s - %(title)s.%(ext)s",    
+       98 -    "format_selector": "best[ext=mp4]/best",                  
+       99 -    "extract_subtitles": True,                                
+      100 -    "download_thumbnail": True,                               
+      101 -    "retries": 3,                                             
+      102 -    "concurrent_fragments": 4                                 
+      103 -}                                                             
+      133 +```bash                                                       
+      134 +# Check all components                                        
+      135 +python --version          # Should be 3.10+                   
+      136 +deno --version           # Should be 2.0+                     
+      137 +ffmpeg -version          # Should be 4.0+                     
+      138 +python -c "import yt_dlp; print(yt_dlp.version.__version__)"  
+          +# Should be 2025.11+                                          
+      139  ```
+      140  
+      106 -### Custom Configuration                                      
+      141 +---                                                           
+      142  
+      108 -Create a custom configuration for specific needs:             
+      143 +## Quick Start                                                
+      144  
+      110 -```python                                                     
+      111 -from get_ibm_yt_dlt import VideoDownloader                    
+      145 +### YouTube Video (Simplest)                                  
+      146  
+      113 -config = {                                                    
+      114 -    'output_dir': './research_videos',                        
+      115 -    'format_selector': 'best[height<=720][ext=mp4]',          
+      116 -    'extract_subtitles': True,                                
+      117 -    'download_thumbnail': True,                               
+      118 -    'log_level': 'DEBUG'                                      
+      119 -}                                                             
+      147 +```bash                                                       
+      148 +# Download with defaults (low quality, 360p, English subtitles
+          +)                                                             
+      149 +python get_yt-video-by-id.py L7gv9aGB7VY                      
+      150  
+      121 -downloader = VideoDownloader(config)                          
+      122 -downloader.download_video('https://video.ibm.com/recorded/1345
+          -16112')                                                       
+      151 +# Higher quality                                              
+      152 +python get_yt-video-by-id.py L7gv9aGB7VY -q high -s high      
+      153  ```
+      154  
+      125 -## 🤖 AI Research Integration                                 
+      155 +### IBM Video                                                 
+      156  
+      127 -### Batch Processing for Datasets                             
+      157 +```bash                                                       
+      158 +# Download IBM Video stream                                   
+      159 +python get_ibm_yt-dlt_gpt5_working_20251006.py https://video.i
+          +bm.com/recorded/134516112                                     
+      160 +```                                                           
+      161  
+      129 -```python                                                     
+      130 -import pandas as pd                                           
+      131 -from get_ibm_yt_dlt import VideoDownloader                    
+      162 +---                                                           
+      163  
+      133 -# Load video URLs from CSV                                    
+      134 -df = pd.read_csv('video_dataset.csv')                         
+      164 +## YouTube Downloader (`get_yt-video-by-id.py`)               
+      165  
+      136 -downloader = VideoDownloader({                                
+      137 -    'output_dir': './dataset',                                
+      138 -    'output_template': '%(id)s_%(title)s.%(ext)s',            
+      139 -    'format_selector': 'best[height=720][ext=mp4]'  # Consiste
+          -nt resolution                                                 
+      140 -})                                                            
+      166 +A streamlined YouTube downloader with configurable quality and
+          + size presets, designed to bypass YouTube's anti-bot measures 
+          +(updated January 2026).                                       
+      167  
+      142 -for idx, row in df.iterrows():                                
+      143 -    print(f"Progress: {idx+1}/{len(df)} ({((idx+1)/len(df)*100
+          -):.1f}%)")                                                    
+      144 -    success = downloader.download_video(row['url'])           
+      145 -    if not success:                                           
+      146 -        print(f"Failed: {row['url']}")                        
+      168 +### Usage                                                     
+      169 +                                                              
+      170 +```bash                                                       
+      171 +python get_yt-video-by-id.py [VIDEO_ID] [OPTIONS]             
+      172  ```
+      173  
+      149 -### Multimodal Analysis Setup                                 
+      174 +### Arguments                                                 
+      175  
+      151 -```python                                                     
+      152 -# Configuration optimized for multimodal AI research          
+      153 -research_config = {                                           
+      154 -    'output_dir': './multimodal_dataset',                     
+      155 -    'format_selector': 'best[height=720][ext=mp4]',  # Consist
+          -ent for video analysis                                        
+      156 -    'extract_subtitles': True,                       # Text mo
+          -dality                                                        
+      157 -    'download_thumbnail': True,                      # Image m
+          -odality                                                       
+      158 -    'output_template': '%(uploader)s/%(id)s_%(title)s.%(ext)s'
+      159 -}                                                             
+      160 -```                                                           
+      176 +| Argument | Description | Default |                          
+      177 +|----------|-------------|---------|                          
+      178 +| `VIDEO_ID` | YouTube video ID (e.g., `dQw4w9WgXcQ`) | `L7gv9
+          +aGB7VY` |                                                     
+      179  
+      162 -## 🎥 **Video Playback Compatibility**                        
+      180 +### Options                                                   
+      181  
+      164 -### **Issue**: QuickTime Player Compatibility                 
+      165 -Some HLS-converted videos may show "The file isn't compatible 
+          -with QuickTime Player" due to timestamp issues.               
+      182 +| Option | Short | Description | Default |                    
+      183 +|--------|-------|-------------|---------|                    
+      184 +| `--quality` | `-q` | Video quality preset | `low` |         
+      185 +| `--size` | `-s` | Resolution size preset | `low` |          
+      186 +| `--language` | `-l` | Subtitle language code | `en` |       
+      187 +| `--output-dir` | `-o` | Output directory | `./downloads` |  
+      188 +| `--list-formats` | | List available formats | - |           
+      189 +| `--cookies` | | Use Chrome cookies (age-restricted) | - |   
+      190  
+      167 -### **Solutions**:                                            
+      191 +### Quality/Size Matrix                                       
+      192  
+      169 -#### **Option 1: Use VLC Media Player (Recommended)**         
+      170 -```bash                                                       
+      171 -# Download VLC (free): https://www.videolan.org/vlc/          
+      172 -# Then play with:                                             
+      173 -vlc "downloads/ConcordiaMHD - Symposium Plenary One.mp4"      
+      174 -```                                                           
+      193 +| Quality | Size | Max Resolution | Use Case |                
+      194 +|---------|------|----------------|----------|                
+      195 +| `low` | `low` | 360p | Mobile, bandwidth-limited |          
+      196 +| `low` | `medium` | 480p | Standard definition |             
+      197 +| `low` | `high` | 720p | Good quality, moderate size |       
+      198 +| `medium` | `low` | 480p | Balanced |                        
+      199 +| `medium` | `medium` | 720p | **Recommended default** |      
+      200 +| `medium` | `high` | 1080p | HD quality |                    
+      201 +| `high` | `low` | 720p | Quality-focused |                   
+      202 +| `high` | `medium` | 1080p | High definition |               
+      203 +| `high` | `high` | Best | Maximum available quality |        
+      204  
+      176 -#### **Option 2: Convert with FFmpeg**                        
+      205 +### Examples                                                  
+      206 +                                                              
+      207  ```bash
+      178 -# Install ffmpeg first, then convert:                         
+      179 -ffmpeg -i "downloads/ConcordiaMHD - Symposium Plenary One.mp4"
+          - -c copy -movflags +faststart "fixed_video.mp4"               
+      180 -```                                                           
+      208 +# Download in 720p HD                                         
+      209 +python get_yt-video-by-id.py dQw4w9WgXcQ -q medium -s medium  
+      210  
+      182 -#### **Option 3: Download with Auto-Fix (Coming Soon)**       
+      183 -The script will automatically apply FFmpeg post-processing for
+          - HLS compatibility.                                           
+      211 +# Download in 1080p with Spanish subtitles                    
+      212 +python get_yt-video-by-id.py dQw4w9WgXcQ -q high -s high -l es
+      213  
+      185 -### **Recommended Media Players**:                            
+      186 -- **VLC Media Player**: Best compatibility with HLS-converted 
+          -videos                                                        
+      187 -- **mpv**: Lightweight, excellent for all formats             
+      188 -- **IINA** (macOS): Modern macOS player with great codec suppo
+          -rt                                                            
+      189 -- **PotPlayer** (Windows): Advanced features and codec support
+      214 +# Download age-restricted content (requires Chrome login)     
+      215 +python get_yt-video-by-id.py RESTRICTED_ID --cookies          
+      216  
+      191 -## 🛠️ Troubleshooting                                         
+      217 +# List available formats before downloading                   
+      218 +python get_yt-video-by-id.py dQw4w9WgXcQ --list-formats       
+      219  
+      193 -### Common Issues                                             
+      220 +# Custom output directory                                     
+      221 +python get_yt-video-by-id.py dQw4w9WgXcQ -o ./my_videos       
+      222 +```                                                           
+      223  
+      195 -#### 1. "Requested format is not available" Error             
+      224 +### Output Files                                              
+      225  
+      197 -This happens when the video doesn't have the requested quality
+          -/format. **Solution:**                                        
+      226 +For each downloaded video, the following files are created:   
+      227  
+      199 -```bash                                                       
+      200 -# First, check available formats                              
+      201 -python get_ibm_yt-dlt.py --list-formats                       
+      202 -                                                              
+      203 -# Then download with available format                         
+      204 -python get_ibm_yt-dlt.py -q best  # Use best available quality
+      228  ```
+      229 +downloads/                                                    
+      230 +├── Video Title.mp4          # Video file (merged video+audio)
+      231 +├── Video Title.en.vtt       # Subtitles (VTT format)         
+      232 +└── Video Title.webp         # Thumbnail image                
+      233 +```                                                           
+      234  
+      207 -#### 2. IBM Video Platform Limitations                        
+      235 +---                                                           
+      236  
+      209 -IBM Video (formerly Ustream) often has limited format options.
+          - **Solutions:**                                               
+      237 +## IBM Video Downloader                                       
+      238  
+      211 -- Use `--list-formats` to see what's available                
+      212 -- Set quality to `best` instead of specific resolutions       
+      213 -- The script automatically falls back to `best` format if pref
+          -erred format fails                                            
+      239 +Advanced downloader for IBM Video (video.ibm.com) HLS streams 
+          +with comprehensive diagnostics and format detection.          
+      240  
+      215 -#### 3. Network Timeouts                                      
+      241 +### Primary Script                                            
+      242  
+      243  ```bash
+      218 -# Increase retries and enable verbose logging                 
+      219 -python get_ibm_yt-dlt.py -v  # Check detailed logs            
+      244 +python get_ibm_yt-dlt_gpt5_working_20251006.py [URL] [OPTIONS]
+      245  ```
+      246  
+      222 -#### 4. Permission Errors                                     
+      247 +### Options                                                   
+      248  
+      249 +| Option | Short | Description | Default |                    
+      250 +|--------|-------|-------------|---------|                    
+      251 +| `--output-dir` | `-o` | Output directory | `./downloads` |  
+      252 +| `--quality` | `-q` | Quality (`480p`, `720p`, `1080p`, `best
+          +`) | `best` |                                                 
+      253 +| `--format` | `-f` | Container (`mp4`, `webm`, `mkv`) | `mp4`
+          + |                                                            
+      254 +| `--info-only` | | Extract info without downloading | - |    
+      255 +| `--list-formats` | | List available formats | - |           
+      256 +| `--diagnostics` | | Run comprehensive diagnostics | - |     
+      257 +| `--debug-level` | | Debug level (`none`, `min`, `max`) | `ma
+          +x` |                                                          
+      258 +| `--fix-audio` | | Force video+audio combination | - |       
+      259 +| `--cookies` | | Path to cookies.txt file | - |              
+      260 +| `--cookies-from-browser` | | Browser to extract cookies from
+          + | - |                                                        
+      261 +                                                              
+      262 +### Examples                                                  
+      263 +                                                              
+      264  ```bash
+      225 -# Ensure output directory is writable                         
+      226 -mkdir -p ./downloads                                          
+      227 -chmod 755 ./downloads                                         
+      265 +# Download with automatic format detection                    
+      266 +python get_ibm_yt-dlt_gpt5_working_20251006.py                
+      267 +                                                              
+      268 +# Run diagnostics first                                       
+      269 +python get_ibm_yt-dlt_gpt5_working_20251006.py --diagnostics  
+      270 +                                                              
+      271 +# Download specific URL with 720p quality                     
+      272 +python get_ibm_yt-dlt_gpt5_working_20251006.py https://video.i
+          +bm.com/recorded/134516112 -q 720p                             
+      273 +                                                              
+      274 +# Use browser cookies for restricted content                  
+      275 +python get_ibm_yt-dlt_gpt5_working_20251006.py --cookies-from-
+          +browser chrome                                                
+      276  ```
+      277  
+      230 -### Debug Mode                                                
+      278 +---                                                           
+      279  
+      232 -Enable comprehensive debugging:                               
+      280 +## Configuration                                              
+      281  
+      234 -```bash                                                       
+      235 -python get_ibm_yt-dlt.py -v --list-formats                    
+      282 +### Environment Configuration (`config.json`)                 
+      283 +                                                              
+      284 +```json                                                       
+      285 +{                                                             
+      286 +  "output_dir": "./downloads",                                
+      287 +  "output_template": "%(uploader)s - %(title)s.%(ext)s",      
+      288 +  "format_selector": "best[height<=1080][ext=mp4]/best[ext=mp4
+          +]/best",                                                      
+      289 +  "video_quality": "best",                                    
+      290 +  "extract_subtitles": true,                                  
+      291 +  "download_thumbnail": true,                                 
+      292 +  "retries": 3,                                               
+      293 +  "fragment_retries": 5,                                      
+      294 +  "concurrent_fragments": 4,                                  
+      295 +  "merge_output_format": "mp4"                                
+      296 +}                                                             
+      297  ```
+      298  
+      238 -## 📁 Output Structure                                        
+      299 +### Programmatic Usage                                        
+      300  
+      301 +```python                                                     
+      302 +from get_yt_video_by_id import download_video                 
+      303 +                                                              
+      304 +# Simple download                                             
+      305 +success = download_video(                                     
+      306 +    video_id='L7gv9aGB7VY',                                   
+      307 +    quality='medium',                                         
+      308 +    size='high',                                              
+      309 +    language='en',                                            
+      310 +    output_dir='./research_data'                              
+      311 +)                                                             
+      312 +                                                              
+      313 +# Batch processing                                            
+      314 +video_ids = ['id1', 'id2', 'id3']                             
+      315 +for vid in video_ids:                                         
+      316 +    download_video(vid, quality='low', size='low')            
+      317  ```
+      241 -downloads/                                                    
+      242 -├── logs/                                                     
+      243 -│   ├── download_20241201_143022.log      # Detailed logs     
+      244 -│   └── progress_report.json              # Progress tracking 
+      245 -├── ConcordiaMHD - Symposium Plenary One.mp4                  
+      246 -├── ConcordiaMHD - Symposium Plenary One.en.vtt  # Subtitles  
+      247 -└── ConcordiaMHD - Symposium Plenary One.jpg     # Thumbnail  
+      248 -```                                                           
+      318  
+      250 -## 🔍 Advanced Features                                       
+      319 +---                                                           
+      320  
+      252 -### Format Selection Logic                                    
+      321 +## Troubleshooting                                            
+      322  
+      254 -The script uses intelligent format selection:                 
+      323 +### YouTube: "403 Forbidden" Error                            
+      324  
+      256 -1. **Analyzes available formats** for the specific video      
+      257 -2. **Selects optimal quality** based on what's actually availa
+          -ble                                                           
+      258 -3. **Falls back gracefully** if preferred format isn't availab
+          -le                                                            
+      259 -4. **Prioritizes compatibility** (MP4 > WebM > MKV)           
+      325 +**Cause:** YouTube's anti-bot detection blocking requests.    
+      326  
+      261 -### Progress Tracking                                         
+      327 +**Solutions:**                                                
+      328 +1. Ensure Deno is installed: `deno --version`                 
+      329 +2. Ensure curl_cffi is installed: `pip install "curl_cffi>=0.1
+          +1,<0.14"`                                                     
+      330 +3. Update yt-dlp: `pip install -U yt-dlp`                     
+      331  
+      263 -```python                                                     
+      264 -# Access progress data programmatically                       
+      265 -downloader = VideoDownloader()                                
+      266 -downloader.download_video(url)                                
+      332 +### YouTube: "Sign in to confirm you're not a bot"            
+      333  
+      268 -# Check progress during download                              
+      269 -progress = downloader.progress_data                           
+      270 -print(f"Download progress: {progress}")                       
+      334 +**Cause:** YouTube requires authentication for certain content
+          +.                                                             
+      335 +                                                              
+      336 +**Solution:**                                                 
+      337 +```bash                                                       
+      338 +python get_yt-video-by-id.py VIDEO_ID --cookies               
+      339  ```
+      340  
+      273 -### Logging System                                            
+      341 +### YouTube: "n challenge solving failed"                     
+      342  
+      275 -- **Structured logging** with timestamps                      
+      276 -- **Progress tracking** with speed and ETA                    
+      277 -- **Error categorization** for debugging                      
+      278 -- **JSON reports** for programmatic access                    
+      343 +**Cause:** Missing JavaScript runtime or EJS components.      
+      344  
+      280 -## 🧪 Testing                                                 
+      345 +**Solutions:**                                                
+      346 +1. Install Deno: `brew install deno` (macOS) or equivalent    
+      347 +2. The script automatically downloads EJS components from GitH
+          +ub                                                            
+      348  
+      282 -Test with the default IBM video:                              
+      349 +### IBM Video: "Requested format is not available"            
+      350  
+      351 +**Solution:**                                                 
+      352  ```bash
+      285 -# Quick test - just get info                                  
+      286 -python get_ibm_yt-dlt.py --info-only                          
+      353 +# Check available formats first                               
+      354 +python get_ibm_yt-dlt_gpt5_working_20251006.py --list-formats 
+      355  
+      288 -# Full test - download with verbose logging                   
+      289 -python get_ibm_yt-dlt.py -v                                   
+      356 +# Use best available                                          
+      357 +python get_ibm_yt-dlt_gpt5_working_20251006.py -q best        
+      358  ```
+      359  
+      292 -Expected output for test video:                               
+      293 -- **Title**: "Symposium Plenary One"                          
+      294 -- **Duration**: ~85 minutes (5131 seconds)                    
+      295 -- **Uploader**: "ConcordiaMHD"                                
+      296 -- **Available formats**: 7 formats (252p to 486p)             
+      360 +### QuickTime Player Compatibility                            
+      361  
+      298 -## 🤝 Contributing                                            
+      362 +HLS-converted videos may not play in QuickTime. Use VLC or mpv
+          + instead:                                                     
+      363 +```bash                                                       
+      364 +# macOS                                                       
+      365 +brew install vlc                                              
+      366 +vlc "downloads/video.mp4"                                     
+      367  
+      300 -1. Fork the repository                                        
+      301 -2. Create a feature branch (`git checkout -b feature/amazing-f
+          -eature`)                                                      
+      302 -3. Commit your changes (`git commit -m 'Add amazing feature'`)
+      303 -4. Push to the branch (`git push origin feature/amazing-featur
+          -e`)                                                           
+      304 -5. Open a Pull Request                                        
+      368 +# Or convert with FFmpeg                                      
+      369 +ffmpeg -i input.mp4 -c copy -movflags +faststart output.mp4   
+      370 +```                                                           
+      371  
+      306 -### Development Setup                                         
+      372 +### General: Network Timeouts                                 
+      373  
+      374  ```bash
+      309 -# Install development dependencies                            
+      310 -uv add --dev pytest black flake8 mypy                         
+      375 +# Enable verbose logging to diagnose                          
+      376 +python get_yt-video-by-id.py VIDEO_ID -v                      
+      377  
+      312 -# Run tests                                                   
+      313 -pytest tests/                                                 
+      378 +# The scripts have automatic retry logic (5 retries by default
+          +)                                                             
+      379 +```                                                           
+      380  
+      315 -# Format code                                                 
+      316 -black get_ibm_yt_dlt.py                                       
+      381 +---                                                           
+      382  
+      318 -# Type checking                                               
+      319 -mypy get_ibm_yt_dlt.py                                        
+      383 +## Testing                                                    
+      384 +                                                              
+      385 +### Run Unit Tests                                            
+      386 +                                                              
+      387 +```bash                                                       
+      388 +# Install pytest                                              
+      389 +pip install pytest                                            
+      390 +                                                              
+      391 +# Run all tests                                               
+      392 +pytest test_get_yt_video.py -v                                
+      393 +                                                              
+      394 +# Run specific test class                                     
+      395 +pytest test_get_yt_video.py::TestFormatSelector -v            
+      396  ```
+      397  
+      322 -## 📄 Dependencies                                            
+      398 +### Test Coverage                                             
+      399  
+      324 -- **Python 3.8+**                                             
+      325 -- **yt-dlp**: Core downloading functionality                  
+      326 -- **requests**: HTTP requests                                 
+      327 -- **pathlib**: Path handling                                  
+      328 -- **FFmpeg**: Video processing (optional, for format conversio
+          -n)                                                            
+      400 +The test suite includes:                                      
+      401 +- Resolution limit validation (9 tests)                       
+      402 +- Format selector generation (6 tests)                        
+      403 +- Download function behavior (6 tests)                        
+      404 +- Integration tests (1 test, requires network)                
+      405  
+      330 -## 🐛 Known Issues                                            
+      406 +---                                                           
+      407  
+      332 -1. **IBM Video Platform**: Limited to lower resolutions (typic
+          -ally max 486p-720p)                                           
+      333 -2. **Subtitle Availability**: Not all videos have subtitles   
+      334 -3. **Regional Restrictions**: Some videos may be geographicall
+          -y restricted                                                  
+      408 +## Project Structure                                          
+      409  
+      336 -## 🔮 Roadmap                                                 
+      410 +```                                                           
+      411 +utility_yt-dlt_2025/                                          
+      412 +├── get_yt-video-by-id.py              # YouTube downloader (J
+          +an 2026)                                                      
+      413 +├── get_ibm_yt-dlt_gpt5_working_20251006.py  # IBM Video downl
+          +oader                                                         
+      414 +├── test_get_yt_video.py               # Test suite           
+      415 +├── config.json                        # Default configuration
+      416 +├── requirements.txt                   # Python dependencies  
+      417 +├── CLAUDE.md                          # AI assistant guidance
+      418 +├── README.md                          # This file            
+      419 +├── downloads/                         # Default output direct
+          +ory                                                           
+      420 +│   └── logs/                          # Download logs        
+      421 +└── docs/                                                     
+      422 +    └── chat_notes.md                  # Development notes    
+      423 +```                                                           
+      424  
+      338 -- [ ] **GUI Interface** for non-technical users               
+      339 -- [ ] **Playlist Support** for batch downloads                
+      340 -- [ ] **Quality Upscaling** integration with AI models        
+      341 -- [ ] **Automatic Transcription** for videos without subtitles
+      342 -- [ ] **Metadata Enhancement** with AI-generated descriptions 
+      343 -- [ ] **Docker Support** for containerized deployment         
+      425 +### Script Variants                                           
+      426  
+      345 -## 📜 License                                                 
+      427 +| Script | Description |                                      
+      428 +|--------|-------------|                                      
+      429 +| `get_yt-video-by-id.py` | **Primary** - YouTube downloader w
+          +ith 2026 anti-bot fixes |                                     
+      430 +| `get_ibm_yt-dlt_gpt5_working_20251006.py` | **Primary** - IB
+          +M Video HLS downloader |                                      
+      431 +| `get_ibm_yt-dlt_claude45_20251006.py` | Claude variant (expe
+          +rimental) |                                                   
+      432 +| `get_ibm_yt-dlt_grok4_20251006.py` | Grok variant (experimen
+          +tal) |                                                        
+      433  
+      434 +---                                                           
+      435 +                                                              
+      436 +## Contributing                                               
+      437 +                                                              
+      438 +1. Fork the repository                                        
+      439 +2. Create a feature branch: `git checkout -b feature/amazing-f
+          +eature`                                                       
+      440 +3. Make your changes                                          
+      441 +4. Run tests: `pytest test_get_yt_video.py -v`                
+      442 +5. Commit: `git commit -m 'Add amazing feature'`              
+      443 +6. Push: `git push origin feature/amazing-feature`            
+      444 +7. Open a Pull Request                                        
+      445 +                                                              
+      446 +---                                                           
+      447 +                                                              
+      448 +## Dependencies                                               
+      449 +                                                              
+      450 +### Core                                                      
+      451 +- **yt-dlp** >= 2025.11.12 - Video downloading engine         
+      452 +- **requests** >= 2.31.0 - HTTP requests                      
+      453 +- **Deno** >= 2.0 - JavaScript runtime for YouTube challenges 
+      454 +                                                              
+      455 +### Optional                                                  
+      456 +- **curl_cffi** 0.11-0.13 - Browser impersonation             
+      457 +- **ffmpeg-python** >= 0.2.0 - Video post-processing          
+      458 +- **pytest** >= 8.0 - Testing framework                       
+      459 +                                                              
+      460 +---                                                           
+      461 +                                                              
+      462 +## License                                                    
+      463 +                                                              
+      464  This project is licensed under the MIT License - see the [LICE
+           NSE](LICENSE) file for details.
+      465  
+      349 -## 🙏 Acknowledgments                                         
+      466 +---                                                           
+      467  
+      351 -- **yt-dlp team** for the excellent downloading library       
+      352 -- **IBM** for providing accessible video content              
+      353 -- **Python community** for the robust ecosystem               
+      468 +## Acknowledgments                                            
+      469  
+      355 -## 📞 Support                                                 
+      470 +- [yt-dlp](https://github.com/yt-dlp/yt-dlp) - The backbone of
+          + this toolkit                                                 
+      471 +- [Deno](https://deno.land/) - JavaScript runtime enabling You
+          +Tube downloads                                                
+      472 +- [curl_cffi](https://github.com/yifeikong/curl_cffi) - Browse
+          +r impersonation library                                       
+      473  
+      474 +---                                                           
+      475 +                                                              
+      476 +## Support                                                    
+      477 +                                                              
+      478  - **Issues**: [GitHub Issues](https://github.com/jon-chun/util
+           ity_yt-dlt_2025/issues)
+      479  - **Discussions**: [GitHub Discussions](https://github.com/jon
+           -chun/utility_yt-dlt_2025/discussions)
+      359 -- **Email**: [Support Email](mailto:support@example.com)      
+      480  
+      481  ---
+      482  
+      363 -**⭐ If this project helps your research, please give it a sta
+          -r!**                                                          
+      483   No newline at end of file
+      484 +**Last Updated:** January 2026                                
+
+⏺ Now let me commit and push to GitHub.
+
+⏺ Bash(git status)
+  ⎿  On branch main                               
+     Your branch is up to date with 'origin/main'.
+     … +15 lines (ctrl+o to expand)
+
+⏺ Bash(git log --oneline -5)
+  ⎿  37d0087 Add project files with selective video tracking via LFS
+     cf9c095 sync
+     d59366b sync
+     … +3 lines (ctrl+o to expand)
+
+⏺ Bash(git diff README.md | head -100)
+  ⎿  diff --git a/README.md b/README.md
+     index 20d782e..6e64fcf 100644
+     --- a/README.md
+     … +116 lines (ctrl+o to expand)
+
+⏺ Bash(git add README.md CLAUDE.md get_yt-video-by-id.py test_get_yt_video.py &&
+       git status)
+  ⎿  On branch main                               
+     Your branch is up to date with 'origin/main'.
+     … +16 lines (ctrl+o to expand)
+
+⏺ Bash(git commit -m "Add YouTube downloader with anti-bot bypass (Jan 2026)…)
+  ⎿ [main 531fd46] Add YouTube downloader with anti-bot bypass (Jan 2026)
+     4 files changed, 988 insertions(+), 241 deletions(-)
+     create mode 100644 CLAUDE.md
+    … +2 lines (ctrl+o to expand)
+
+
+⏺ Bash(git push origin main) timeout: 1m 0s
+  ⎿  To https://github.com/jon-chun/utility_yt-dlt_2025.git
+        37d0087..531fd46  main -> main
+
+⏺ Successfully pushed to GitHub. Here's the summary:
+
+  Commit Summary
+
+  Commit: 531fd46 - "Add YouTube downloader with anti-bot bypass (Jan 2026)"
+
+  Files Changed (4 files, +988/-241 lines)
+  File: README.md
+  Status: Modified
+  Description: Complete rewrite with professional documentation
+  ────────────────────────────────────────
+  File: CLAUDE.md
+  Status: New
+  Description: AI assistant guidance file
+  ────────────────────────────────────────
+  File: get_yt-video-by-id.py
+  Status: New
+  Description: YouTube downloader script
+  ────────────────────────────────────────
+  File: test_get_yt_video.py
+  Status: New
+  Description: Test suite (23 tests)
+  README Highlights
+
+  - Table of Contents with linked sections
+  - Prerequisites table (Python, yt-dlp, Deno, FFmpeg)
+  - Step-by-step installation for all platforms
+  - Quality/Size matrix with resolution mappings
+  - Comprehensive troubleshooting for common errors
+  - Project structure documentation
+  - Contributing guidelines
+
+  View on GitHub
+
+  https://github.com/jon-chun/utility_yt-dlt_2025
+
+✻ Worked for 1m 46s
+
+
+
